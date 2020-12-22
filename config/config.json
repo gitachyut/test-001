@@ -1,0 +1,20 @@
+{
+  "development": {
+    "username": "root",
+    "password": "root",
+    "database": "nsmaap",
+    "host": "127.0.0.1",
+    "dialect": "mysql",
+    "logging": false,
+    "debug": false
+    
+  },
+  "production": {
+    "username": "nsadmin",
+    "password": "newssearch",
+    "database": "nsappdb",
+    "host": "ns-appdb.cuyz7z1bvkdf.ap-southeast-1.rds.amazonaws.com",
+    "dialect": "mysql",
+    "logging": false
+  }
+}
