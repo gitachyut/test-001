@@ -53,9 +53,9 @@ module.exports = {
                 data : metaData
             });
 
-            queryUpdate(projectId, responseID);
-
             pushToElastic(ES_LINKLIST_INDEX, id, _X);
+
+            queryUpdate(projectId, responseID);
 
             res.json({
                 done : true,
