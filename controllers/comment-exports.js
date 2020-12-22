@@ -1,9 +1,10 @@
 const { startDownload } = require('../reporting/download');
-// const { pushToElastic, update, checkExist, checkLinkExist } = require('../libs/elastic-functions');
+const { pushToElastic } = require('../libs/elastic-functions');
 var request = require('request-promise-native')
 const { createSheetNAssignUser } = require('../reporting/permission');
 const { v4: uuidv4 } = require('uuid');
-const INDEX = 'business';
+const { errors } = require('@elastic/elasticsearch');
+const ES_GOOGLE_INDEX = 'googlesheets';
 
 module.exports = {
     exports: async (req, res) => {
@@ -13,7 +14,9 @@ module.exports = {
             sheetName,
             spreadsheetId,
             workSheetName,
-            existingSheet
+            existingSheet,
+            projectId,
+            bussinessId
         } = req.body;
     
         const sheetMeta = { 
@@ -23,18 +26,32 @@ module.exports = {
         }
         
         const id = uuidv4();
-        startDownload( url, sheetName, sheetMeta )
-                .then(async ( data ) => {
-                    res.json({
-                        done: true
-                    }); 
-                }) 
-                .catch(async err => {
-                    console.log('err', err);
-                    res.json({
-                        fail: true
+        let x = {
+            id,
+            url,
+            sheetName,
+            spreadsheetId,
+            workSheetName,
+            projectId,
+            bussinessId
+        };
+        try {
+            startDownload( url, sheetName, sheetMeta )
+                    .then(async ( data ) => {
+                        pushToElastic(ES_GOOGLE_INDEX, id, x);
+                        res.json({
+                            done: true
+                        }); 
+                    }) 
+                    .catch(async err => {
+                        res.json({
+                            fail: true
+                        })
                     })
-                })
+        } catch (error) {
+            console.log(error)
+        }
+
 
     },
 

@@ -5,7 +5,7 @@ const queryUpdate = async (queryID, newsID) => {
         let boolquery = JSON.parse(query.boolquery);
         let should = boolquery.query.bool.should;
         should.push({
-            match: { id : newsID}
+            match: { id : newsID }
         })
         boolquery.query.bool.should = should;
         boolquery = JSON.stringify(boolquery);
@@ -14,7 +14,7 @@ const queryUpdate = async (queryID, newsID) => {
         }, { 
             where: { id: queryID }  
         });
-         
+
         return true;
     } catch (error) {
 
