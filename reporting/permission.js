@@ -3,7 +3,7 @@ let authentication = require("./authentication");
 const { createSheet } = require('../reporting/addSheet');
 const createSheetNAssignUser = (sheetName, emailIds) => new Promise(async (resolve, reject)=> {
   try {
-
+    console.log(sheetName, emailIds);
     const auth = await authentication.authenticate();
     const sheetId = await createSheet(auth, sheetName);
     drive = google.drive({ version: "v3", auth: auth });

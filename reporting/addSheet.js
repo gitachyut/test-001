@@ -77,7 +77,6 @@ const mergeData =  (auth, sheetName , values, spreadsheetId) => new Promise((res
 }) 
 
 
-
 const appendData =  (auth, sheetName, values, spreadsheetId) => new Promise((resolve, reject) => {
     const resource = {
         values,
@@ -98,6 +97,7 @@ const appendData =  (auth, sheetName, values, spreadsheetId) => new Promise((res
         }
     });
 }) 
+
 
 const addNewSheet  = async (values, sheetName, { spreadsheetId, workSheetName, existingSheet }, commentSheetFileLoc = null) => new Promise(async (resolve, reject) => {
 

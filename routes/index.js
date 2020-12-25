@@ -27,4 +27,11 @@ module.exports = (app) => {
 
     // createSheet
     app.post('/create/new-sheet', controller.commentsExports.createSheet)
+
+    //GetSheets
+    app.get('/get/:project/sheets', controller.commentsExports.getSheet)
+
+    //GetNews
+    app.post('/get/news', controller.commentsExports.getAllNews)
+    
 };

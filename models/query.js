@@ -32,6 +32,10 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.TEXT('long') + ' CHARSET utf8 COLLATE utf8_unicode_ci',
                 allowNull: true
             },
+            selectedQuery: {
+                type: DataTypes.TEXT('long') + ' CHARSET utf8 COLLATE utf8_unicode_ci',
+                allowNull: true
+            },
             meta: {
                 type: DataTypes.TEXT('long') + ' CHARSET utf8 COLLATE utf8_unicode_ci',
                 allowNull: true

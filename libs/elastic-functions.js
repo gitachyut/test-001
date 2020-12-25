@@ -9,6 +9,47 @@ const ElasticClient = new Client({
   });
 
 module.exports = {
+    getFromElastic: async (index, projectId) => {
+      return new Promise((resolve, reject) => {
+          ElasticClient.search({
+            index: index,
+            type: '_doc',
+            body: {
+              query: {
+                match: {
+                  projectId: projectId
+                }
+              }
+            }
+          }, function (err, data) {
+            if (err) resolve({ hits: [] })
+            else resolve(data.body.hits);
+          })
+      })
+    },
+    getNewsElastic: async (index, projectId, bussinessId) => {
+      return new Promise((resolve, reject) => {
+          ElasticClient.search({
+            index: index,
+            type: '_doc',
+            body: {
+                query:{
+                    bool:{
+                        must:[
+                            { match :{ projectId } },
+                            { match :{ bussinessId } }
+                        ]
+                    }
+                },
+                sort: { createdAt: { order: "desc" } },
+                size: 100
+            }
+          }, function (err, data) {
+            if (err) resolve({ hits: [] })
+            else resolve(data.body.hits);
+          })
+      })
+    },
     pushToElastic: async (index, id, data) => {
         return new Promise((resolve, reject) => {
             ElasticClient.index({
