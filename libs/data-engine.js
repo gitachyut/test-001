@@ -1,25 +1,17 @@
-const { pushToElastic, update, checkExist } = require('./elastic-functions')
+const { pushToElastic, update, checkExist } = require('./elastic-functions');
 const defaultSentimentScore = require('./default-sentiment.json');
 const { calculateSentiment } = require('./sentiment');
 const { truncateString } = require("./common");
-const mentionHashtag = require('./mention-hashtag')
+const mentionHashtag = require('./mention-hashtag');
 var moment = require('moment-timezone');
-
 const DEFAULT_THUMBNAIL = "https://s3-ap-southeast-1.amazonaws.com/assets.ns-maap.com/thumbnails/facebook.png"
 const
-    FACEBOOK_INDEX = "facebook" ,
-    INSTAGRAM_INDEX = "instagram" ,
+    FACEBOOK_INDEX = "facebook",
+    INSTAGRAM_INDEX = "instagram",
     REDDIT_INDEX = "reddit",
-    YOUTUBE_INDEX = "youtube" ,
-    YOUTUBE_COMMENTS_INDEX = "youtube_comments",
-    TRADITIONAL_INDEX = 'traditional';
-    WEB_INDEX = "web";
+    YOUTUBE_INDEX = "youtube",
+    TWITTER_INDEX = "twitter";
 
-const
-    SUMMARY_LENGTH = 300,
-    TITLE_LENGTH = 30;
-
-const WAIT = 15;
 
 const postValidate = (post) => {
     if(post !== null && post !== ""  && post !== " " &&  post !== undefined) {
@@ -33,13 +25,12 @@ const postValidate = (post) => {
 const engine = async (event) => {
 
     let { media, data } = event;
-    let { post, title, id, index, post_date, hashtags, mentions } = generateMetaSocialMedia(media, data);
+    let { post, title, id, index, post_date, hashtags, mentions, ...rest } = generateMetaSocialMedia(media, data);
 
     if(postValidate(post) && id){
 
         mentions = mentionHashtag(post).mentions;
         hashtags = mentionHashtag(post).hashtags;
-        //let keywords  = [];
 
         let sentiment = {}
 
@@ -53,7 +44,6 @@ const engine = async (event) => {
             console.log('Err', error)
         }
 
-//        console.log(sentiment)
         data.id = id;
         data.media = media;
         data.post = post;
@@ -68,22 +58,12 @@ const engine = async (event) => {
         data.mentions = mentions;
         data.hashtags = hashtags;
 
-        data = { ...data  };
+        data = { ...data, ...rest  };
 
         try {
-            let exist =  await checkExist(index, id, data);
-
-            console.log('#################### Exist #######################', exist);
-		    let r =  await pushToElastic(index, id, data)
-            /*if(!exist){
-                let r =  await pushToElastic(index, id, data)
-                console.log('inseet with id ', r,  data.post_type)
-            }else{
-                let r = await update(index, id, data)
-                console.log('inseet with id', r, id, data.post_type)
-            }*/
+            let esResponse = await pushToElastic(index, id, data);
         } catch (error) {
-            console.log('Err', error)
+            console.log('Error', error)
         }
     }
     return id;
@@ -126,46 +106,47 @@ function generateMetaSocialMedia(media, data) {
 
         case 'facebook': {
             post = data['text'];
+            title = data['title'];
             id = data.post_id;
             index = FACEBOOK_INDEX;
             likes =  data['Like'];
-            comment_count = data['Comment_Count'] ; 
+            comment_count =  data['Comment_Count'] ; 
             shares= data['Shares'] ;
             author = data['source'];
             reactions = {
-                loves: parseInt( data['Love']),
-                wows: parseInt( data['Wow']),
-                haha: parseInt( data['Haha']),
-                sad: parseInt( data['Sad']),
-                angry:parseInt(  data['Angry']),
+                loves: 0,
+                wows: 0,
+                haha: 0,
+                sad: 0,
+                angry: 0,
                 special: 0,
             };
-            url = data.url 
-            external_url = data.url 
-            original_url = data.url 
+            url = data.Url;
+            external_url = data.Url;
+            original_url = data.Url;
             thumbnail = DEFAULT_THUMBNAIL;
-            post_date =  moment(data.utime);
-            post_type = data.Post_Type
+            post_date =  data.utime;
+            post_type = data.Post_Type;
             break;
         }
 
-
-
         case 'instagram': {
-            post = data.edge_media_to_caption.edges[0].node.text || '';
+            post = data.post;
             title = data.title;
             id = data.id;
             index = INSTAGRAM_INDEX;
-            likes = data.edge_media_preview_like ? data.edge_media_preview_like.count : data.edge_liked_by,
-            comment_count = data.edge_media_to_comment.count,
-            author = data.owner.username 
-	        post_type = data.hasOwnProperty('is_video') ? ( data.is_video ? 'video' : 'post' ) : 'post';
-            post_date = moment(data.taken_at_timestamp)
-            url = "https://www.instagram.com/p/" + data.shortcode
+            likes = data.edge_media_preview_like.count;
+            comment_count = data.edge_media_to_comment.count;
+            author = data.owner.username;
+	        post_type = data.post_type;
+            post_date =  data.post_date
+            url =  data.url;
             thumbnail = null;
-            view_count = data.is_video ? data.video_view_count : null;
+            view_count = data.view_count;
             break;
         }
+
+
                 
         case 'youtube': {
             post = data['description'];
@@ -175,49 +156,46 @@ function generateMetaSocialMedia(media, data) {
             likes = data['likes'];
             comment_count = data['comments'] || 0;
             author = data['author'];
-            tag = [data.tag];
             post_date = moment(data['publishedAt']);
             url = data['url'];
-            thumbnail = data['thumbnail'];
+            thumbnail = null;
             view_count = data['viewcount'];
             post_type = 'video';
             break;
         }
 
         case 'reddit': {
-            post = data['selftext'] ? data['selftext'] : data['title'];
+            post = data['selftext'];
             title = data['title'] || "";
             author = data['author'];
             likes = data['likes'];
             comment_count = data['num_comments'];
             id = data.id;
             index = REDDIT_INDEX;
-	        post_type = data.is_video ? 'video' : 'post';
-            tag = data.tag;
-            post_date = moment.unix(data['created']);
-            url = "https://reddit.com" + data['permalink'];
-            external_url = data['url'] ;
-            thumbnail = data['thumbnail'];
+	        post_type = data.post_type;
+            post_date = data.post_date;
+            url = data.external_url
+            external_url = data['external_url'] ;
+            view_count = data['view_count'];
+            thumbnail = null;
             break;
         }
 
-        case 'web': {
-            post = data.text ? data.text : data.title ;
-            id = data.uuid;
-            index = WEB_INDEX;
-            author = data.thread.site_full || data.thread.site;
-            post_date = data.published ? moment(data.published) : moment();
-            title = data.title || "";
-            url = data.thread.url || "";
-            external_url = data.thread.url || "";
-            post_type = data.thread['site_type'] || "";
-            likes =  data.hasOwnProperty('thread') ?  data.thread.social.facebook.likes : 0 ;
-            comment_count = data.hasOwnProperty('thread') ?  data.thread.social.facebook.comments : 0;
-            shares =  data.hasOwnProperty('thread') ?   data.thread.social.facebook.shares : 0 ;
-            thumbnail =  data.thread.main_image || null;
+        case 'twitter': {
+            post = data['tweet'];
+            id = data.id;
+            index = TWITTER_INDEX;
+            likes = data.likes;
+            comment_count = data.comment_count;
+            view_count = data.view_count;
+            author = data.author
+            url = data['link'] ;
+            post_type = data.post_type;
+            post_date = data.post_date;
+            external_url = data.url;
+            thumbnail = data.url;
             break;
         }
-
 
         
     }

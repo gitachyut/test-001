@@ -1,5 +1,5 @@
 const { addSocialMediaArticle } = require('../libs/webhose.data-engine')
-const { defaultData } = require('../libs/default-web-data');
+const { defaultData } = require('../libs/dataset/web');
 const { pushToElastic } = require('../libs/elastic-functions');
 const Query = require('../models').Query; 
 const { v4: uuidv4 } = require('uuid');
@@ -54,9 +54,7 @@ module.exports = {
             });
 
             pushToElastic(ES_LINKLIST_INDEX, id, _X);
-
             queryUpdate(projectId, responseID);
-
             res.json({
                 done : true,
                 id: responseID

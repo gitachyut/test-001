@@ -65,17 +65,7 @@ const engine = async (event) => {
         data = { ...data, ...rest  };
 
         try {
-            let exist =  await checkExist(index, id, data);
-
-            console.log('#################### Exist #######################', exist);
-		     await pushToElastic(index, id, data)
-            /*if(!exist){
-                let r =  await pushToElastic(index, id, data)
-                console.log('inseet with id ', r,  data.post_type)
-            }else{
-                let r = await update(index, id, data)
-                console.log('inseet with id', r, id, data.post_type)
-            }*/
+		    await pushToElastic(index, id, data)
         } catch (error) {
             console.log('Err', error)
         }
