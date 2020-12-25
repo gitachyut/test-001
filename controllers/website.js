@@ -1,8 +1,10 @@
 const { addSocialMediaArticle } = require('../libs/webhose.data-engine')
 const { defaultData } = require('../libs/default-web-data');
+const { pushToElastic } = require('../libs/elastic-functions');
 const Query = require('../models').Query; 
 const { v4: uuidv4 } = require('uuid');
 const { queryUpdate } = require('../service/query');
+const ES_LINKLIST_INDEX = 'linklist';
 
 module.exports = {
 
@@ -11,9 +13,12 @@ module.exports = {
             const data = req.body;
             const projectId = data.projectId;
             const bussinessId = data.bussinessId;
-
-            console.log(data.post_type.value)
             const id = uuidv4();
+            const _X = {
+                id,
+                ...data,
+                createdAt: new Date()
+            };
             const urlMeta =  new URL(data.url);
             const host = urlMeta.host;
             let metaData = {
@@ -41,14 +46,14 @@ module.exports = {
                 updated: data.postDate,
                 like_count: data.likes,
                 comment_count: data.comment_count
-            }
+            };
 
             const responseID =  await addSocialMediaArticle({
                 media : 'web',
                 data : metaData
             });
 
-            console.log('responseID => ', responseID);
+            pushToElastic(ES_LINKLIST_INDEX, id, _X);
 
             queryUpdate(projectId, responseID);
 

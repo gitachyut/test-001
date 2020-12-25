@@ -10,6 +10,7 @@ const ElasticClient = new Client({
 
 module.exports = {
     pushToElastic: async (index, id, data) => {
+
         return new Promise((resolve, reject) => {
             ElasticClient.index({
                 index: index,
