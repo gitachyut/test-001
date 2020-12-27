@@ -1,9 +1,14 @@
 const { startDownload } = require('../reporting/download');
-const { pushToElastic, getFromElastic, getNewsElastic } = require('../libs/elastic-functions');
-var request = require('request-promise-native')
+const { 
+    pushToElastic, 
+    getFromElastic, 
+    getNewsElastic,
+    checkLinkExist
+} = require('../libs/elastic-functions'); 
 const { createSheetNAssignUser } = require('../reporting/permission');
 const { v4: uuidv4 } = require('uuid');
 const { errors } = require('@elastic/elasticsearch');
+const { findQuery } = require('../service/query')
 const ES_GOOGLE_INDEX = 'googlesheets';
 const ES_PROJECTS_SHEETS_INDEX = 'projectsnsheets';
 const ES_LINKLIST_INDEX = 'linklist';
@@ -56,11 +61,12 @@ module.exports = {
     getSheet: async (req, res) => {
         try {
             const {
-                project
-            } = req.params;
+                projectId,
+                bussinessId
+            } = req.body;
             
-            if(project){
-                getFromElastic(ES_PROJECTS_SHEETS_INDEX, project)
+            if(projectId &&  bussinessId){
+                getFromElastic(ES_PROJECTS_SHEETS_INDEX, projectId, bussinessId)
                     .then( data => {
                         let response = data.hits.map( hit => {
                             return {
@@ -124,20 +130,52 @@ module.exports = {
         } = req.body;
 
         if(projectId && bussinessId){
-            getNewsElastic(ES_LINKLIST_INDEX, projectId, bussinessId)
-                .then( data => {
-                    // let response = data.hits.map( hit => {
-                    //     return {
-                    //         workSheetName: hit._source.workSheetName,
-                    //         projectId: hit._source.projectId,
-                    //         sheetID: hit._source.sheetID
-                    //     }
-                    // });
-                    res.json({
-                        data
-                    });
+
+            const shoulds = await findQuery(projectId);
+            
+            let should_query = [];
+            if(shoulds.length > 0){
+                console.log('shoulds', shoulds)
+                shoulds.forEach(should => {
+                    should_query.push(should)
                 })
-                .catch( err => console.log(err))
+                getNewsElastic(should_query)
+                    .then( data => {
+                        res.json({
+                            data
+                        });
+                    })
+                    .catch( err => {
+                        res.status(500).json({ error: 'something is wrong' });
+                    })
+            }else{
+                res.status(500).json({ error: 'something is wrong' });
+            }
+
+        }
+
+    },
+    findUniqueUrl: async (req, res) => {
+        try {
+            const { url } = req.body;
+            if(url){
+                const count = await checkLinkExist(url);
+                if(count>0){
+                    res.json({
+                        exist: true
+                    })
+                }else{
+                    res.json({
+                        exist: false
+                    })
+                }
+            }else{
+                res.json({
+                    exist: false
+                })
+            }
+        } catch (error) {
+            res.status(500).json({ error: 'something is wrong' });
         }
 
     }

@@ -1,6 +1,12 @@
 let { google } = require('googleapis');
 let authentication = require("./authentication");
-const { createSheet } = require('../reporting/addSheet');
+const {
+  POST_SUMMARY_SHEET,
+  ALL_LINKS_SHEET,
+  COMMENT_SUMMARY_SHEET
+} = require('../config/config');
+
+const { createSheet, addSheet, appendData } = require('../reporting/addSheet');
 const createSheetNAssignUser = (sheetName, emailIds) => new Promise(async (resolve, reject)=> {
   try {
     console.log(sheetName, emailIds);
@@ -20,9 +26,42 @@ const createSheetNAssignUser = (sheetName, emailIds) => new Promise(async (resol
       });
     });
 
+    // 1st Sheet
+    const allLinksSheet = await addSheet(auth, ALL_LINKS_SHEET, sheetId );
+    let allLinksSheetDate = [];
+    allLinksSheetDate = [ ["Worksheet Name"],  ["Post Summary"], ["Comment Summary"] ]
+    await appendData(auth, ALL_LINKS_SHEET, allLinksSheetDate, sheetId);
+
+    //2nd Sheet
+    const postSummarySheet = await addSheet(auth, POST_SUMMARY_SHEET, sheetId );
+    let postSummarySheetDate = [];
+    postSummarySheetDate.push([
+        'Post Date', 
+        'View Comments', 
+        'Language', 
+        'Media', 
+        'Caption in Post', 
+        'Summary/Translation',
+        'Views',
+        'Comments',
+        'Likes',
+        'Shares',
+        'Author',
+        'Post Type',
+        'Link'
+
+    ]);
+    await appendData(auth, POST_SUMMARY_SHEET, postSummarySheetDate, sheetId);
+
+    //3rd Sheet
+    await addSheet(auth, COMMENT_SUMMARY_SHEET, sheetId );
+    await appendData(auth, COMMENT_SUMMARY_SHEET, allLinksSheetDate, sheetId);
+    
+    //response
     resolve(sheetId);
 
   } catch (error) {
+    // console.log(error)
     reject(error);
   }
 

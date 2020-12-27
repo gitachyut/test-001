@@ -3,7 +3,13 @@ const { twitter } = require('../libs/dataset/twitter');
 const { pushToElastic } = require('../libs/elastic-functions');
 const { queryUpdate } = require('../service/query');
 const { generateNumber } = require('../libs/helper');
+const { dataMapper } = require('../libs/data-maaper');
 const { v4: uuidv4 } = require('uuid');
+const authentication = require("../reporting/authentication");
+const {
+    POST_SUMMARY_SHEET
+} = require('../config/config');
+const { mergeData } = require('../reporting/addSheet');
 const ES_LINKLIST_INDEX = 'linklist';
 
 module.exports = {
@@ -14,19 +20,18 @@ module.exports = {
             const bussinessId = data.bussinessId;
             const id = generateNumber(6);
             data.id = id;
-            const _X = {
-                id,
-                ...data,
-                createdAt: new Date()
-            };
             let metaData =  twitter(data)
             const responseID =  await addSocialMediaArticle({
                 media : 'twitter',
                 data : metaData
             });
-            console.log('responseID => ', responseID);
-            pushToElastic(ES_LINKLIST_INDEX, id, _X);
+
             queryUpdate(projectId, responseID);
+
+            const auth = await authentication.authenticate();
+            const values = dataMapper(data);
+            mergeData(auth, POST_SUMMARY_SHEET, values, data.spreadsheetId.value);
+
 
             res.json({
                 done : true,
