@@ -11,7 +11,8 @@ const ElasticClient = new Client({
 
 module.exports = {
     getFromElastic: async (index, projectId, bussinessId) => {
-      return new Promise((resolve, reject) => {
+      if(projectId == null){
+        return new Promise((resolve, reject) => {
           ElasticClient.search({
             index: index,
             type: '_doc',
@@ -19,7 +20,6 @@ module.exports = {
               query:{
                   bool:{
                       must:[
-                          { match_phrase : { projectId: projectId } },
                           { match : { bussinessId: bussinessId } }
                       ]
                   }
@@ -30,21 +30,55 @@ module.exports = {
             else resolve(data.body.hits);
           })
       })
+      }else{
+        return new Promise((resolve, reject) => {
+            ElasticClient.search({
+              index: index,
+              type: '_doc',
+              body: {
+                query:{
+                    bool:{
+                        must:[
+                            { match_phrase : { projectId: projectId } },
+                            { match : { bussinessId: bussinessId } }
+                        ]
+                    }
+                }
+              }
+            }, function (err, data) {
+              if (err) resolve({ hits: [] })
+              else resolve(data.body.hits);
+            })
+        })
+      }
     },
 
-    getNewsElastic: (shouldQuery) => {
+    getNewsElastic: (shouldQuery, postdate) => {
+      const date = postdate.split('T')[0];
       return new Promise( async (resolve, reject) => {
-
         const completeQuery = {
               "from": 0,
               "size": 100,
+              "sort": {
+                "post_date": { "order": "desc" }
+              },
               "query": {
                   "bool": {
                     "should": [
                       {
                           "bool": {
                               "should": shouldQuery,
-                              "minimum_should_match": 1
+                              "minimum_should_match": 1,
+                              "filter":[
+                                {
+                                  "range":{
+                                    "post_date":{
+                                      "gte":`${date}T00:00:00.000+0530`,
+                                      "lte":`${date}T23:59:59.999+0530`
+                                    }
+                                  }
+                                }
+                              ]
                           }
                       }
                     ]
@@ -63,8 +97,9 @@ module.exports = {
                       'Content-Type': 'application/json'
                   }
               })
-              resolve(results.hits);
+              resolve(results.hits.hits);
           } catch (error) {
+            console.log(error)
             reject(error);
           }
 

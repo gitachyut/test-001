@@ -69,6 +69,7 @@ const mergeData =  (auth, sheetName , values, spreadsheetId) => new Promise((res
       }, (err, result) => {
         if (err) {
           // Handle error
+          console.log(err)
             reject(err);
         } else {
             resolve(result); 
