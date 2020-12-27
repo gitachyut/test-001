@@ -274,5 +274,8 @@ const loadXLS = async (commentSheetFileLoc, sheetName, sheetMeta, media) => new 
 module.exports = {
     loadXLS,
     addNewSheet,
-    createSheet
+    createSheet,
+    addSheet,
+    appendData,
+    mergeData
 }

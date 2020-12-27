@@ -14,11 +14,6 @@ module.exports = {
             const projectId = data.projectId;
             const bussinessId = data.bussinessId;
             const id = uuidv4();
-            const _X = {
-                id,
-                ...data,
-                createdAt: new Date()
-            };
             const urlMeta =  new URL(data.url);
             const host = urlMeta.host;
             let metaData = {
@@ -53,8 +48,8 @@ module.exports = {
                 data : metaData
             });
 
-            pushToElastic(ES_LINKLIST_INDEX, id, _X);
             queryUpdate(projectId, responseID);
+            
             res.json({
                 done : true,
                 id: responseID

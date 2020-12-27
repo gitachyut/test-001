@@ -45,7 +45,23 @@ const queryUpdate = async (queryID, newsID) => {
 }
 
 
+const findQuery =  (queryID) =>  new Promise(async (resolve, reject) => {
+    try {
+        let query = await Query.findOne({ where: { id: queryID} });
+        if( query.selectedQuery ){
+            let selectedQuery = JSON.parse(query.selectedQuery);
+            resolve(selectedQuery);
+        }else{
+            resolve([]); 
+        }
+    } catch (error) {
+        reject(null);
+    }
+});
+
+
 module.exports = {
-    queryUpdate
+    queryUpdate,
+    findQuery
 }
 

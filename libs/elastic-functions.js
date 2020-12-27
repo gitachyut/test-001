@@ -1,4 +1,5 @@
 const { Client } = require('@elastic/elasticsearch')
+var request = require('request-promise-native')
 const config  = require('../config/elastic');
 const ElasticClient = new Client({
     node: config.host,
@@ -9,16 +10,19 @@ const ElasticClient = new Client({
   });
 
 module.exports = {
-    getFromElastic: async (index, projectId) => {
+    getFromElastic: async (index, projectId, bussinessId) => {
       return new Promise((resolve, reject) => {
           ElasticClient.search({
             index: index,
             type: '_doc',
             body: {
-              query: {
-                match: {
-                  projectId: projectId
-                }
+              query:{
+                  bool:{
+                      must:[
+                          { match_phrase : { projectId: projectId } },
+                          { match : { bussinessId: bussinessId } }
+                      ]
+                  }
               }
             }
           }, function (err, data) {
@@ -27,29 +31,46 @@ module.exports = {
           })
       })
     },
-    getNewsElastic: async (index, projectId, bussinessId) => {
-      return new Promise((resolve, reject) => {
-          ElasticClient.search({
-            index: index,
-            type: '_doc',
-            body: {
-                query:{
-                    bool:{
-                        must:[
-                            { match :{ projectId } },
-                            { match :{ bussinessId } }
-                        ]
-                    }
-                },
-                sort: { createdAt: { order: "desc" } },
-                size: 100
-            }
-          }, function (err, data) {
-            if (err) resolve({ hits: [] })
-            else resolve(data.body.hits);
-          })
+
+    getNewsElastic: (shouldQuery) => {
+      return new Promise( async (resolve, reject) => {
+
+        const completeQuery = {
+              "from": 0,
+              "size": 100,
+              "query": {
+                  "bool": {
+                    "should": [
+                      {
+                          "bool": {
+                              "should": shouldQuery,
+                              "minimum_should_match": 1
+                          }
+                      }
+                    ]
+                  }
+              }
+          };
+        
+          try {
+              var results = await request({
+                  method: 'post',
+                  json: true,
+                  body: completeQuery,
+                  url: `${config.credUrl}/${config.ESIndices.join(",")}/_doc/_search`,
+                  headers: {
+                      'Connection': 'keep-alive',
+                      'Content-Type': 'application/json'
+                  }
+              })
+              resolve(results.hits);
+          } catch (error) {
+            reject(error);
+          }
+
       })
     },
+
     pushToElastic: async (index, id, data) => {
         return new Promise((resolve, reject) => {
             ElasticClient.index({
@@ -63,6 +84,7 @@ module.exports = {
             });
         });
     },
+
     checkExist: async (index, id, data) =>{
       try {
         let results =  await ElasticClient.search({
@@ -81,52 +103,59 @@ module.exports = {
         return false;
       }
     },
-    checkLinkExist: async (index, url) => {
-      console.log('url',url);
-      let urlMeta = new URL(url);
-      let hostname = urlMeta.hostname;
-      if(hostname.includes('www')){
-          hostname = hostname.replace('www.', '')
-      } 
-      
-      let url_1 = 'https://www.'+ hostname + urlMeta.pathname;
-      let url_2 = 'https://www.' + hostname + urlMeta.pathname + urlMeta.search;
-  
-      let url_3 = 'https://'+ hostname + urlMeta.pathname;
-      let url_4 = 'https://' + hostname + urlMeta.pathname + urlMeta.search;
-  
-      let url_5 = 'http://www.'+ hostname + urlMeta.pathname;
-      let url_6 = 'http://www.' + hostname + urlMeta.pathname + urlMeta.search;
-  
-      let url_7 = 'http://'+ hostname + urlMeta.pathname;
-      let url_8 = 'http://' + hostname + urlMeta.pathname + urlMeta.search;
 
-      try {
-        let results =  await ElasticClient.search({
-            index: index ,
-            type: '_doc',
-            body: {
-                query: {
-                  bool: {
-                    should: [
-                        {match: { url: url_1 }},
-                        {match: { id: url_2 }},
-                        {match: { url: url_3 }},
-                        {match: { id: url_4 }},
-                        {match: { url: url_5 }},
-                        {match: { id: url_6 }},
-                        {match: { url: url_7 }},
-                        {match: { id: url_8 }},
-                    ],
-                    minimum_should_match: 1
+    checkLinkExist: async (url) => {
+
+      return new Promise( async (resolve, reject) => {
+
+        let urlMeta = new URL(url);
+        let hostname = urlMeta.hostname;
+        if(hostname.includes('www')){
+            hostname = hostname.replace('www.', '')
+        } 
+
+        let url_2 = 'https://www.' + hostname + urlMeta.pathname + urlMeta.search;
+        let url_4 = 'https://' + hostname + urlMeta.pathname + urlMeta.search;
+        let url_6 = 'http://www.' + hostname + urlMeta.pathname + urlMeta.search;
+        let url_8 = 'http://' + hostname + urlMeta.pathname + urlMeta.search;
+
+        const completeQuery = {
+              "from": 0,
+              "size": 100,
+              "query": {
+                  "bool": {
+                    "should": [
+                      {
+                          "bool": {
+                              "should": [
+                                {"match_phrase": { "url": url_2 }},
+                                {"match_phrase": { "url": url_4 }},
+                                {"match_phrase": { "url": url_6 }},
+                                {"match_phrase": { "url": url_8 }}
+                              ],
+                              "minimum_should_match": 1
+                          }
+                      }
+                    ]
                   }
-                }
-            }
-          })
-        return  results.hits.total ? true : false;
-      } catch (error) {
-        console.log(error);
-      }
+              }
+          };
+          try {
+              var results = await request({
+                  method: 'post',
+                  json: true,
+                  body: completeQuery,
+                  url: `${config.credUrl}/${config.ESIndices.join(",")}/_doc/_search`,
+                  headers: {
+                      'Connection': 'keep-alive',
+                      'Content-Type': 'application/json'
+                  }
+              })
+              resolve(results.hits.total.value);
+          } catch (error) {
+            reject(error);
+          }
+      })
     },
 
     update: async (index, id, data) => {

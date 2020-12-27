@@ -29,9 +29,12 @@ module.exports = (app) => {
     app.post('/create/new-sheet', controller.commentsExports.createSheet)
 
     //GetSheets
-    app.get('/get/:project/sheets', controller.commentsExports.getSheet)
+    app.post('/get/:project/sheets', controller.commentsExports.getSheet)
 
     //GetNews
     app.post('/get/news', controller.commentsExports.getAllNews)
+
+    //unique url
+    app.post('/check/unique/url', controller.commentsExports.findUniqueUrl)
     
 };
