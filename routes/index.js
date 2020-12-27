@@ -31,6 +31,9 @@ module.exports = (app) => {
     //GetSheets
     app.post('/get/:project/sheets', controller.commentsExports.getSheet)
 
+    //GetSheets Business
+    app.post('/get/:bussinessId/sheetsForBusiness', controller.commentsExports.getSheetbyBusiness)
+
     //GetNews
     app.post('/get/news', controller.commentsExports.getAllNews)
 

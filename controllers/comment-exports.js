@@ -8,7 +8,8 @@ const {
 const { createSheetNAssignUser } = require('../reporting/permission');
 const { v4: uuidv4 } = require('uuid');
 const { errors } = require('@elastic/elasticsearch');
-const { findQuery } = require('../service/query')
+const { findQuery } = require('../service/query');
+const { isNull } = require('lodash');
 const ES_GOOGLE_INDEX = 'googlesheets';
 const ES_PROJECTS_SHEETS_INDEX = 'projectsnsheets';
 const ES_LINKLIST_INDEX = 'linklist';
@@ -86,6 +87,30 @@ module.exports = {
             res.status(500).json({ error: 'something is wrong' });
         }
     },
+
+    getSheetbyBusiness : async (req, res) => {
+        const {
+            bussinessId
+        } = req.params;
+
+        if(bussinessId){
+            getFromElastic(ES_PROJECTS_SHEETS_INDEX, projectId = null, bussinessId)
+                .then( data => {
+                    let response = data.hits.map( hit => {
+                        return {
+                            workSheetName: hit._source.workSheetName,
+                            projectId: hit._source.projectId,
+                            sheetID: hit._source.sheetID
+                        }
+                    });
+                    res.json({
+                        data: response
+                    });
+                })
+                .catch( err => console.log(err))
+        }
+
+    },
     createSheet: async (req, res) => {
         try {
             const {
@@ -126,30 +151,31 @@ module.exports = {
     getAllNews: async (req, res) => {
         const {
             projectId,
-            bussinessId
+            bussinessId,
+            postDate
         } = req.body;
 
         if(projectId && bussinessId){
-
             const shoulds = await findQuery(projectId);
-            
             let should_query = [];
             if(shoulds.length > 0){
-                console.log('shoulds', shoulds)
                 shoulds.forEach(should => {
                     should_query.push(should)
                 })
-                getNewsElastic(should_query)
+                getNewsElastic(should_query, postDate)
                     .then( data => {
                         res.json({
                             data
                         });
                     })
                     .catch( err => {
+                        console.log(err);
                         res.status(500).json({ error: 'something is wrong' });
                     })
             }else{
-                res.status(500).json({ error: 'something is wrong' });
+                res.json({
+                    data: []
+                });
             }
 
         }
