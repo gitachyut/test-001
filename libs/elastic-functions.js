@@ -72,7 +72,7 @@ module.exports = {
                               "filter":[
                                 {
                                   "range":{
-                                    "post_date":{
+                                    "createdAt":{
                                       "gte":`${date}T00:00:00.000+0530`,
                                       "lte":`${date}T23:59:59.999+0530`
                                     }
