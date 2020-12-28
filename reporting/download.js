@@ -2,6 +2,7 @@ const got = require("got");
 const { createWriteStream, unlinkSync } = require("fs");
 const { loadXLS, addNewSheet } = require('./addSheet');
 const { getRedditComments } = require('./reddit');
+const { hardwarezoneScraper } = require('./hardwarezone');
 var path = require('path');
 const { 
   initiateCommentsDownloader, 
@@ -68,6 +69,10 @@ const startDownload =  async (SML, SheetName, sheetMeta ) => new Promise( async 
       let host = url.hostname;
       let media, response;
 
+
+      if(host === 'forums.hardwarezone.com.sg' || host === 'www.forums.hardwarezone.com.sg' )
+          media = 'hardwarezone';
+
       if(host === 'facebook.com' || host === 'www.facebook.com' || host === 'm.facebook.com')
           media = 'facebook';
 
@@ -90,7 +95,6 @@ const startDownload =  async (SML, SheetName, sheetMeta ) => new Promise( async 
           const id = response.data.id;
           setTimeout(async () => {
               const file = await fileDownloads( exportLink );
-
               loadXLS(file, SheetName, sheetMeta, media)
                 .then( r => resolve(r))
                 .catch( e => console.log('001', e) || reject(e));
@@ -103,24 +107,19 @@ const startDownload =  async (SML, SheetName, sheetMeta ) => new Promise( async 
             .then(r => resolve(r))
             .catch(e => reject(e));
       }
+
+      if(media === 'hardwarezone'){
+          const values = await hardwarezoneScraper(SML, sheetMeta.existingSheet);
+              addNewSheet(values, SheetName, sheetMeta )
+                .then(r => resolve(r))
+                .catch(e => reject(e));
+      }
       
     } catch (error) {
       console.log("error", error);
-      // throw error;
       reject(error);
     }
 }) 
-
-// const workSheetName = 'NHB(L) Test Dec19-Dec22';
-// const SML = 'https://www.facebook.com/JalaTranslate/posts/1014646805698318';
-// const SheetName = "JalaTranslate";
-// const spreadsheetId = '18rq7Ykub11BEZUstzmHEsd9joGU25qGlcINyG4MZfsw';
-// const sheetMeta = { 
-//   spreadsheetId: spreadsheetId || null, 
-//   workSheetName: null
-// }
-
-// startDownload(SML, SheetName, sheetMeta);
 
 module.exports = {
   startDownload
