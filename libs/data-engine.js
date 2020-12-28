@@ -58,7 +58,6 @@ const engine = async (event) => {
         data.mentions = mentions;
         data.hashtags = hashtags;
         data.createdAt = moment().format("YYYY-MM-DDTHH:mm:ss.SSSZZ");
-
         data = { ...data, ...rest  };
 
         try {

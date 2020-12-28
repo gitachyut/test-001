@@ -11,7 +11,7 @@ let dataset = (data) => ({
     "description": data.post,
     "videoId": data.id,
     "url": data.url,
-    "publishedAt": data.date
+    "publishedAt": data.postDate
 })
 
 module.exports = {
