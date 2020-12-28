@@ -17,7 +17,7 @@ module.exports = {
             const data = req.body;
             const projectId = data.projectId;
             const bussinessId = data.bussinessId;
-
+            console.log()
             const id = uuidv4();
             data.id = id;
             let metaDate = youtube(data);

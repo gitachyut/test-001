@@ -6,6 +6,7 @@ const { v4: uuidv4 } = require('uuid');
 const { queryUpdate } = require('../service/query');
 const ES_LINKLIST_INDEX = 'linklist';
 const authentication = require("../reporting/authentication");
+const { dataMapper } = require('../libs/data-maaper');
 const {
     POST_SUMMARY_SHEET
 } = require('../config/config');

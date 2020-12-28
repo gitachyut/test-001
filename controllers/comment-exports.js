@@ -38,7 +38,7 @@ module.exports = {
             url,
             sheetName,
             spreadsheetId,
-            workSheetName,
+            workSheetName: spreadsheetId.label,
             projectId,
             bussinessId
         };
