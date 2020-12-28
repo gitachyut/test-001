@@ -59,7 +59,7 @@ const hardwarezoneScraper = (url, existingSheet) => new Promise(async ( resolve,
                     url = url[0] + '-' + inc + '.html';
                     setTimeout(function(){
                         runner(url);
-                    }, 1000);
+                    }, 1500);
     
                 }else{
                     resolve(results);
