@@ -27,7 +27,10 @@ module.exports = {
                 data : metaData
             });
 
-            queryUpdate(projectId, responseID);
+            if(projectId){
+                queryUpdate(projectId, responseID);
+            }
+
 
             if(data.spreadsheetId){
                 const auth = await authentication.authenticate();
