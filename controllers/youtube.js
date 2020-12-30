@@ -25,7 +25,11 @@ module.exports = {
                 media : 'youtube',
                 data : metaDate
             });
-            queryUpdate(projectId, responseID);
+            
+            if(projectId){
+                queryUpdate(projectId, responseID);
+            }
+
             
             if(data.spreadsheetId){
                 const auth = await authentication.authenticate();
