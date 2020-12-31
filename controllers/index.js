@@ -5,6 +5,7 @@ const twitter = require('./twitter');
 const youtube = require('./youtube');
 const facebook = require('./facebook');
 const client = require('./client');
+const news = require('./news');
 const commentsExports = require('./comment-exports');
 module.exports = {
     website,
@@ -14,5 +15,6 @@ module.exports = {
     youtube,
     facebook,
     client,
-    commentsExports
+    commentsExports,
+    news
 };

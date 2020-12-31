@@ -54,6 +54,7 @@ module.exports = {
                 data : metaData
             });
 
+            console.log('projectId', projectId);
             if(projectId){
                 queryUpdate(projectId, responseID);
             }

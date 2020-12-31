@@ -21,6 +21,28 @@ const queryUpdate = async (queryID, newsID) => {
     }
 }
 
+const assignQueryUpdate = async (queryID, newsID) => {
+    try {
+        let query = await Query.findOne({ where: { id: queryID} });
+        let selectedQuery = query.selectedQuery ? JSON.parse(query.selectedQuery) : [];
+        selectedQuery.push({
+            match: { id : newsID }
+        });
+        selectedQuery = JSON.stringify(selectedQuery);
+        await Query.update({  
+            selectedQuery
+        }, { 
+            where: { id: queryID }  
+        });
+
+        return true;
+    } catch (error) {
+        
+        console.log(error);
+    }
+}
+
+
 
 const findQuery =  (queryID) =>  new Promise(async (resolve, reject) => {
     try {
@@ -39,6 +61,7 @@ const findQuery =  (queryID) =>  new Promise(async (resolve, reject) => {
 
 module.exports = {
     queryUpdate,
-    findQuery
+    findQuery,
+    assignQueryUpdate
 }
 
