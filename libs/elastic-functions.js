@@ -206,5 +206,27 @@ module.exports = {
                 else resolve(data);
             });
         });
+    },
+
+    deleteDoc: async ({index, type, id}) => {
+      return new Promise( async (resolve, reject) => {
+        try {
+              var results = await request({
+                  method: 'delete',
+                  json: true,
+                  url: `${config.credUrl}/${index}/${type}/${id}`,
+                  headers: {
+                      'Connection': 'keep-alive',
+                      'Content-Type': 'application/json'
+                  }
+              })
+              resolve(results);
+          } catch (error) {
+              console.log(error);
+              reject(error);
+          }
+      });
     }
+
 }
+

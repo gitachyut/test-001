@@ -37,6 +37,9 @@ module.exports = (app) => {
     //GetNews
     app.post('/get/news', controller.commentsExports.getAllNews)
 
+    //News
+    app.post('/news-remove/:id', controller.news.delete)
+
     //unique url
     app.post('/check/unique/url', controller.commentsExports.findUniqueUrl)
     
