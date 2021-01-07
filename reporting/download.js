@@ -1,6 +1,6 @@
 const got = require("got");
 const { createWriteStream, unlinkSync } = require("fs");
-const { loadXLS, addNewSheet } = require('./addSheet');
+const { loadXLS, addNewSheet, loadXLSData, addNewSheet2 } = require('./addSheet');
 const { getRedditComments } = require('./reddit');
 const { hardwarezoneScraper } = require('./hardwarezone');
 var path = require('path');
@@ -121,6 +121,68 @@ const startDownload =  async (SML, SheetName, sheetMeta ) => new Promise( async 
     }
 }) 
 
+
+const startDownload2 =  async (SML, SheetName, sheetMeta, postID, postMedia ) => new Promise( async (resolve, reject) => {
+
+  try {
+    let url = new URL(SML);
+    let host = url.hostname;
+    let media, response;
+
+
+    if(host === 'forums.hardwarezone.com.sg' || host === 'www.forums.hardwarezone.com.sg' )
+        media = 'hardwarezone';
+
+    if(host === 'facebook.com' || host === 'www.facebook.com' || host === 'm.facebook.com')
+        media = 'facebook';
+
+    if(host === 'instagram.com' || host === 'www.instagram.com' )
+        media = 'instagram';  
+
+    if(host === 'twitter.com' || host === 'www.twitter.com' )
+        media = 'twitter';
+
+    if(host === 'youtube.com' || host === 'www.youtube.com' )
+        media = 'youtube';   
+
+    if(host === 'reddit.com' || host === 'www.reddit.com' )
+        media = 'reddit';  
+
+      
+    if(media === 'facebook' || media === 'instagram' || media === 'twitter' || media === 'youtube' ){
+        response = await initiateCommentsDownloader(SML, media);
+        const exportLink = response.data.fileName;
+        const id = response.data.id;
+        setTimeout(async () => {
+            const file = await fileDownloads( exportLink );
+            loadXLSData(file, SheetName, sheetMeta, media, postID, postMedia)
+              .then( r => resolve(r))
+              .catch( e => console.log('001', e) || reject(e));
+        }, 3000);
+    }
+    
+    if(media === 'reddit'){
+        const values = await getRedditComments(SML, sheetMeta.existingSheet, postID, postMedia);
+        addNewSheet2(values, SheetName, sheetMeta )
+          .then(r => resolve(r))
+          .catch(e => reject(e));
+    }
+
+    if(media === 'hardwarezone'){
+        const values = await hardwarezoneScraper(SML, sheetMeta.existingSheet, postID, postMedia);
+            addNewSheet2(values, SheetName, sheetMeta )
+              .then(r => resolve(r))
+              .catch(e => reject(e));
+    }
+    
+  } catch (error) {
+    console.log("error", error);
+    reject(error);
+  }
+}) 
+
+
 module.exports = {
-  startDownload
+  startDownload,
+  startDownload2
 }

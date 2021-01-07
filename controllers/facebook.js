@@ -14,6 +14,7 @@ const ES_LINKLIST_INDEX = 'linklist';
 
 module.exports = {
     addArticle: async (req, res) => {
+
         try {
             const data = req.body;
             const projectId = data.projectId;
@@ -64,8 +65,6 @@ module.exports = {
                     await mergeData(auth, POST_SUMMARY_SHEET, values, data.spreadsheetId.value);
                 }
             }
-
-
             res.json({
                 done : true,
                 id: responseID
@@ -79,6 +78,6 @@ module.exports = {
                 done : false
             });
 
-        }
+        } 
     }
 }

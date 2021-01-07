@@ -25,6 +25,8 @@ module.exports = (app) => {
     //Export Comments
     app.post('/export/comments', controller.commentsExports.exports)
 
+    app.post('/export/comments/link', controller.commentsExports.exportsAndLink)
+
     // createSheet
     app.post('/create/new-sheet', controller.commentsExports.createSheet)
 
@@ -42,5 +44,8 @@ module.exports = (app) => {
 
     //unique url
     app.post('/check/unique/url', controller.commentsExports.findUniqueUrl)
+
+    //pull pullComments
+    app.post('/pull/comments', controller.importData.pullComments);
     
 };
