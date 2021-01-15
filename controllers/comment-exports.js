@@ -85,7 +85,7 @@ module.exports = {
                     .then(async ( data ) => {
                         let docData = {
                             worksheetId: spreadsheetId,
-                            sheetName: workSheetName
+                            sheetName: sheetName
                         };
                         await updateDoc(postMedia, postID, docData);
                         res.json({
