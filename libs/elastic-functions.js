@@ -208,6 +208,39 @@ module.exports = {
         });
     },
 
+    updateDoc: async (index, id, data) => {
+      return new Promise( async (resolve, reject) => {
+        try {
+
+              var bodyDoc = {
+                "doc": {
+                  "commentsLoaded": true,
+                  "commentsMeta": {
+                    "worksheetId": data.worksheetId,
+                    "sheetName": data.sheetName
+                  }
+                }
+              };
+
+              var type = "_update";
+              var results = await request({
+                  method: 'post',
+                  body: bodyDoc,
+                  json: true,
+                  url: `${config.credUrl}/${index}/${type}/${id}`,
+                  headers: {
+                      'Connection': 'keep-alive',
+                      'Content-Type': 'application/json'
+                  }
+              })
+              resolve(results);
+          } catch (error) {
+              console.log(error);
+              reject(error);
+          }
+      });
+    },
+
     deleteDoc: async ({index, type, id}) => {
       return new Promise( async (resolve, reject) => {
         try {
