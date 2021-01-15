@@ -1,4 +1,4 @@
-const { startDownload } = require('../reporting/download');
+const { startDownload, startDownload2 } = require('../reporting/download');
 const { 
     pushToElastic, 
     getFromElastic, 
@@ -59,6 +59,44 @@ module.exports = {
             console.log(error)
         }
     },
+
+    exportsAndLink: async (req, res) => {
+        const {
+            url,
+            sheetName,
+            spreadsheetId,
+            workSheetName,
+            existingSheet,
+            projectId,
+            bussinessId,
+            postID,
+            postMedia
+        } = req.body;
+
+        const sheetMeta = { 
+          spreadsheetId: spreadsheetId,
+          workSheetName:  workSheetName || null,
+          existingSheet: existingSheet 
+        };
+
+        try {
+            startDownload2( url, sheetName, sheetMeta, postID, postMedia )
+                    .then(async ( data ) => {
+                        res.json({
+                            done: true
+                        }); 
+                    }) 
+                    .catch(async err => {
+                        res.json({
+                            fail: true
+                        })
+                    })
+        } catch (error) {
+            console.log(error)
+        }
+    },
+
+
     getSheet: async (req, res) => {
         try {
             const {

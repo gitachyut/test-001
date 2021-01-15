@@ -1,16 +1,18 @@
 const axios = require('axios');
 var moment = require("moment");
+const { pushToElastic } = require('../libs/elastic-functions');
+const ES_COMMENTS_INDEX = 'comments';
 
-
-const getRedditComments =  async (link, existingSheet) => new Promise(async (resolve, reject) => {
+const getRedditComments =  async (link, existingSheet, postID, postMedia) => new Promise(async (resolve, reject) => {
     let originalUrl = link;
     let results;
+    let esOutput=[];
     link = link.substring(0, link.length - 1); 
     link = `${link}.json`;
-    if(existingSheet === 'true'){
+    if(existingSheet !== 'false' && existingSheet !== '' && existingSheet){
         results = [
-            [ '' ]
-            [ 'Post Link', originalUrl, '' ],
+            [ '' ],
+            [ 'Post Link', originalUrl, '' ]
         ];
     }else{
         results = [
@@ -73,7 +75,7 @@ const getRedditComments =  async (link, existingSheet) => new Promise(async (res
                 } else {
                     comment.likes = -1;
                 }
-    
+                
                 let final = [
                     results.length + 1 ,  
                     comment.created_utc,
@@ -81,6 +83,12 @@ const getRedditComments =  async (link, existingSheet) => new Promise(async (res
                 ];
             
                 results.push(final)
+                esOutput.push({
+                    sequence: (results.length + 1).toString(),
+                    date: comment.created_utc,
+                    comment: comment.body || '',
+                    sentiment: 'Neutral'
+                })
 
                 if (thread.data.replies) {
                     level++;
@@ -93,17 +101,21 @@ const getRedditComments =  async (link, existingSheet) => new Promise(async (res
 
 
 
-        json[1].data.children.forEach(function (thread,i) {
+        json[1].data.children.forEach(async function (thread,i) {
+
             parseComments(thread, 0);
+
             if( i+1 ==  json[1].data.children.length ){
                 // none
             }else{
-                // console.log(results)
-                resolve(results)
-                // csvWriter.writeRecords(results)       // returns a promise
-                // .then(() => {
-                //     console.log('...Done');
-                // });
+
+                let postComment = {
+                    id: postID,
+                    media: postMedia,
+                    comments: esOutput
+                }
+                const output = await pushToElastic(ES_COMMENTS_INDEX, postID, postComment);
+                resolve(results);
             }
         });
 

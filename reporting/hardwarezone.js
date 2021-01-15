@@ -1,5 +1,7 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
+const { pushToElastic } = require('../libs/elastic-functions');
+const ES_COMMENTS_INDEX = 'comments';
 
 
 const hzPaginationRemover = (url) => {
@@ -7,14 +9,15 @@ const hzPaginationRemover = (url) => {
     return `${url[0]}.html`;
 }
 
-const hardwarezoneScraper = (url, existingSheet) => new Promise(async ( resolve, reject )=> {
+const hardwarezoneScraper = (url, existingSheet, postID, postMedia) => new Promise(async ( resolve, reject )=> {
     const original_url = hzPaginationRemover(url);
     let results, inc = 1;
+    let esOutput = [];
 
-    if(existingSheet === 'true'){
+    if(existingSheet !== 'false' && existingSheet !== '' && existingSheet){
         results = [
-            [ '' ]
-            [ 'Post Link', original_url , '' ],
+            [ '' ],
+            [ 'Post Link', original_url , '' ]
         ];
     }else{
         results = [
@@ -31,7 +34,7 @@ const hardwarezoneScraper = (url, existingSheet) => new Promise(async ( resolve,
     const runner = (url) => {
         try {
             axios(url)
-            .then(response => {
+            .then( async (response) => {
                 if(!response.request._redirectable._redirectCount){  
                     console.log('url', url);            
                     const html = response.data;
@@ -52,6 +55,14 @@ const hardwarezoneScraper = (url, existingSheet) => new Promise(async ( resolve,
                             ]
                         );
 
+                        esOutput.push({
+                            sequence: parseInt( sequence.split('#')[1] ).toString(),
+                            date: date,
+                            comment: comment || '',
+                            sentiment: 'Neutral'
+                        })
+
+
                     })
 
                     inc++;
@@ -62,6 +73,13 @@ const hardwarezoneScraper = (url, existingSheet) => new Promise(async ( resolve,
                     }, 1500);
     
                 }else{
+
+                    let postComment = {
+                        id: postID,
+                        media: postMedia,
+                        comments: esOutput
+                    }
+                    const output = await pushToElastic(ES_COMMENTS_INDEX, postID, postComment);
                     resolve(results);
                 }
             })
