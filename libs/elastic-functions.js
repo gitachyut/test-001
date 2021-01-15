@@ -213,7 +213,7 @@ module.exports = {
 
               var bodyDoc = {
                 "doc": {
-                  "commentsLoaded": true,
+                  "commentsLoaded": "true",
                   "commentsMeta": {
                     "worksheetId": data.worksheetId,
                     "sheetName": data.sheetName
