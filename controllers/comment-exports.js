@@ -3,7 +3,8 @@ const {
     pushToElastic, 
     getFromElastic, 
     getNewsElastic,
-    checkLinkExist
+    checkLinkExist,
+    updateDoc
 } = require('../libs/elastic-functions'); 
 const { createSheetNAssignUser } = require('../reporting/permission');
 const { v4: uuidv4 } = require('uuid');
@@ -82,6 +83,11 @@ module.exports = {
         try {
             startDownload2( url, sheetName, sheetMeta, postID, postMedia )
                     .then(async ( data ) => {
+                        let docData = {
+                            worksheetId: spreadsheetId,
+                            sheetName: workSheetName
+                        };
+                        await updateDoc(postMedia, postID, docData);
                         res.json({
                             done: true
                         }); 
