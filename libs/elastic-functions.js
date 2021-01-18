@@ -240,6 +240,37 @@ module.exports = {
       });
     },
 
+
+    updateExportLink: async (index, id, exportLink ) => {
+      return new Promise( async (resolve, reject) => {
+        try {
+
+              var bodyDoc = {
+                "doc": {
+                  "exportLink": exportLink
+                }
+              };
+
+              var type = "_update";
+              var results = await request({
+                  method: 'post',
+                  body: bodyDoc,
+                  json: true,
+                  url: `${config.credUrl}/${index}/${type}/${id}`,
+                  headers: {
+                      'Connection': 'keep-alive',
+                      'Content-Type': 'application/json'
+                  }
+              })
+              resolve(results);
+          } catch (error) {
+              console.log(error);
+              reject(error);
+          }
+      });
+    },
+
+
     deleteDoc: async ({index, type, id}) => {
       return new Promise( async (resolve, reject) => {
         try {

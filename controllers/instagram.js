@@ -1,5 +1,6 @@
 const { addSocialMediaArticle } = require('../libs/data-engine')
 const { instagram } = require('../libs/dataset/instagram');
+const { initiateDownload } = require('../reporting/download'); 
 const { pushToElastic } = require('../libs/elastic-functions');
 const { queryUpdate } = require('../service/query');
 const { dataMapper } = require('../libs/data-maaper');
@@ -12,6 +13,7 @@ const { mergeData, appendData, addSheet } = require('../reporting/addSheet');
 const { v4: uuidv4 } = require('uuid');
 const ES_LINKLIST_INDEX = 'linklist';
 
+
 module.exports = {
     addArticle: async (req, res) => {
         try {
@@ -21,6 +23,11 @@ module.exports = {
             const id = generateNumber(6);
             data.id = id;
             let metaData =  instagram(data)
+
+            let exportLink = await initiateDownload(data.url)
+            metaData.exportInitiated = true;
+            metaData.exportLink = exportLink;
+
             const responseID =  await addSocialMediaArticle({
                 media : 'instagram',
                 data : metaData

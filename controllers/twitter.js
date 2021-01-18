@@ -1,4 +1,5 @@
 const { addSocialMediaArticle } = require('../libs/data-engine')
+const { initiateDownload } = require('../reporting/download'); 
 const { twitter } = require('../libs/dataset/twitter');
 const { pushToElastic } = require('../libs/elastic-functions');
 const { queryUpdate } = require('../service/query');
@@ -12,6 +13,7 @@ const {
 const { mergeData, appendData, addSheet } = require('../reporting/addSheet');
 const ES_LINKLIST_INDEX = 'linklist';
 
+
 module.exports = {
     addArticle: async (req, res) => {
         try {
@@ -21,6 +23,12 @@ module.exports = {
             const id = generateNumber(6);
             data.id = id;
             let metaData =  twitter(data)
+
+            let exportLink = await initiateDownload(data.url)
+            metaData.exportInitiated = true;
+            metaData.exportLink = exportLink;
+
+
             const responseID =  await addSocialMediaArticle({
                 media : 'twitter',
                 data : metaData

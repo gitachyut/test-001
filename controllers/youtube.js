@@ -1,4 +1,5 @@
 const { addSocialMediaArticle } = require('../libs/data-engine');
+const { initiateDownload } = require('../reporting/download'); 
 const { youtube } = require('../libs/dataset/youtube');
 const { pushToElastic } = require('../libs/elastic-functions');
 const { queryUpdate } = require('../service/query');
@@ -11,6 +12,7 @@ const {
 const { mergeData, appendData, addSheet } = require('../reporting/addSheet');
 const ES_LINKLIST_INDEX = 'linklist';
 
+
 module.exports = {
     addArticle: async (req, res) => {
         try {
@@ -21,6 +23,12 @@ module.exports = {
             const id = uuidv4();
             data.id = id;
             let metaDate = youtube(data);
+
+            let exportLink = await initiateDownload(data.url)
+            metaData.exportInitiated = true;
+            metaData.exportLink = exportLink;
+
+
             const responseID =  await addSocialMediaArticle({
                 media : 'youtube',
                 data : metaDate

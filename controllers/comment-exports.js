@@ -71,7 +71,9 @@ module.exports = {
             projectId,
             bussinessId,
             postID,
-            postMedia
+            postMedia,
+            exportLink,
+            reload
         } = req.body;
 
         const sheetMeta = { 
@@ -79,9 +81,10 @@ module.exports = {
           workSheetName:  workSheetName || null,
           existingSheet: existingSheet 
         };
-
+       
+        console.log('exportLink', exportLink, reload)
         try {
-            startDownload2( url, sheetName, sheetMeta, postID, postMedia )
+            startDownload2( url, sheetName, sheetMeta, postID, postMedia, exportLink, reload )
                     .then(async ( data ) => {
                         let docData = {
                             worksheetId: spreadsheetId,

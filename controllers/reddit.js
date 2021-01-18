@@ -21,6 +21,10 @@ module.exports = {
             const id = uuidv4();
             data.id = id;
             let metaData =  reddit(data)
+
+            metaData.exportInitiated = false;
+            metaDate.exportLink = null;
+
             const responseID =  await addSocialMediaArticle({
                 media : 'reddit',
                 data : metaData

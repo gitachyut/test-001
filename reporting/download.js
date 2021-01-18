@@ -3,6 +3,7 @@ const { createWriteStream, unlinkSync } = require("fs");
 const { loadXLS, addNewSheet, loadXLSData, addNewSheet2 } = require('./addSheet');
 const { getRedditComments } = require('./reddit');
 const { hardwarezoneScraper } = require('./hardwarezone');
+const { updateExportLink } = require('../libs/elastic-functions');
 var path = require('path');
 const { 
   initiateCommentsDownloader, 
@@ -122,7 +123,43 @@ const startDownload =  async (SML, SheetName, sheetMeta ) => new Promise( async 
 }) 
 
 
-const startDownload2 =  async (SML, SheetName, sheetMeta, postID, postMedia ) => new Promise( async (resolve, reject) => {
+const initiateDownload =  async ( SML ) => new Promise( async (resolve, reject) => {
+
+  try {
+    let url = new URL(SML);
+    let host = url.hostname;
+    let media, response;
+
+    if(host === 'facebook.com' || host === 'www.facebook.com' || host === 'm.facebook.com')
+        media = 'facebook';
+
+    if(host === 'instagram.com' || host === 'www.instagram.com' )
+        media = 'instagram';  
+
+    if(host === 'twitter.com' || host === 'www.twitter.com' )
+        media = 'twitter';
+
+    if(host === 'youtube.com' || host === 'www.youtube.com' )
+        media = 'youtube';   
+
+      
+    if(media === 'facebook' || media === 'instagram' || media === 'twitter' || media === 'youtube' ){
+        response = await initiateCommentsDownloader(SML, media);
+        const exportLink = response.data.fileName;  
+        resolve(exportLink);
+    }else{
+      resolve(null);
+    }
+    
+  } catch (error) {
+    console.log("error", error);
+    reject(error);
+  }
+}) 
+
+
+
+const startDownload2 =  async (SML, SheetName, sheetMeta, postID, postMedia, exportedLink=false, reload=false ) => new Promise( async (resolve, reject) => {
 
   try {
     let url = new URL(SML);
@@ -150,15 +187,27 @@ const startDownload2 =  async (SML, SheetName, sheetMeta, postID, postMedia ) =>
 
       
     if(media === 'facebook' || media === 'instagram' || media === 'twitter' || media === 'youtube' ){
-        response = await initiateCommentsDownloader(SML, media);
-        const exportLink = response.data.fileName;
-        const id = response.data.id;
-        setTimeout(async () => {
-            const file = await fileDownloads( exportLink );
-            loadXLSData(file, SheetName, sheetMeta, media, postID, postMedia)
-              .then( r => resolve(r))
-              .catch( e => console.log('001', e) || reject(e));
-        }, 3000);
+
+        if(!exportedLink || reload){
+          
+          response = await initiateCommentsDownloader(SML, media);
+          const exportLink = response.data.fileName;
+          await updateExportLink(postMedia, postID, exportLink);
+          setTimeout(async () => {
+              const file = await fileDownloads( exportLink );
+              loadXLSData(file, SheetName, sheetMeta, media, postID, postMedia)
+                .then( r => resolve(r))
+                .catch( e =>  reject(e));
+          }, 3000);
+
+        }else{
+          
+          const file = await fileDownloads( exportedLink );
+          loadXLSData(file, SheetName, sheetMeta, media, postID, postMedia)
+            .then( r => resolve(r))
+            .catch( e => reject(e));
+        }
+
     }
     
     if(media === 'reddit'){
@@ -182,7 +231,9 @@ const startDownload2 =  async (SML, SheetName, sheetMeta, postID, postMedia ) =>
 }) 
 
 
+
 module.exports = {
   startDownload,
-  startDownload2
+  startDownload2,
+  initiateDownload
 }

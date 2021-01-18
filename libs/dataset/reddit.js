@@ -94,7 +94,7 @@ let dataset = (data) => {
         "id": data.id,
         "is_robot_indexable": true,
         "report_reasons": null,
-        "author": data.author,
+        "author": data.author.trim(),
         "discussion_type": null,
         "num_comments": data.comments ? parseInt( data.comments ) : 0 ,
         "send_replies": true,

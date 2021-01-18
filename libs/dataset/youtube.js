@@ -1,6 +1,6 @@
 let dataset = (data) => ({
     "title": data.title,
-    "author": data.author,
+    "author": data.author.trim(),
     "length": null,
     "duration": 500,
     "likes": data.likes ? parseInt(data.likes) : 0,
