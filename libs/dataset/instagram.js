@@ -83,7 +83,7 @@ let dataset = (data) => {
             "profile_pic_url_hd": data.url,
             "requested_by_viewer": false,
             "restricted_by_viewer": null,
-            "username": data.author
+            "username": data.author.trim()
         },
         "shortcode": "CB2ArOEnEjY",
         "taken_at_timestamp": 1593057705,

@@ -1,4 +1,5 @@
 const { addSocialMediaArticle } = require('../libs/data-engine')
+const { initiateDownload } = require('../reporting/download'); 
 const { facebook } = require('../libs/dataset/facebook');
 const { dataMapper } = require('../libs/data-maaper');
 const { pushToElastic } = require('../libs/elastic-functions');
@@ -22,7 +23,12 @@ module.exports = {
 
             const id = generateNumber(3);
             data.id = id;
-            let metaData =  facebook(data)
+            let metaData = facebook(data)
+
+            let exportLink = await initiateDownload(data.url)
+            metaData.exportInitiated = true;
+            metaData.exportLink = exportLink;
+
             const responseID =  await addSocialMediaArticle({
                 media : 'facebook',
                 data : metaData

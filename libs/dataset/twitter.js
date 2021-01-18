@@ -50,7 +50,7 @@ let dataset = (data) => {
         "shares": data.shares ? parseInt(data.shares) : 0,
         "reactions_count": 0,
         "reactions": {},
-        "author": data.author,
+        "author": data.author.trim(),
         "view_count": data.views ? parseInt(data.views) : 0,
         "external_url": data.url,
         "url": data.url,

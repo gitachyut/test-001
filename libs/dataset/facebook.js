@@ -20,7 +20,7 @@ var moment = require('moment-timezone');
 
 let dataset = (data) => {
     return { 
-        source: data.author,
+        source: data.author.trim(),
         utime: moment(data.postDate, "YYYY-MM-DDTHH:mm:ss.SSSZZ"),
         post_id: data.id,
         Post_Type: data.post_type.value,

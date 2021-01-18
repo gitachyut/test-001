@@ -49,12 +49,15 @@ module.exports = {
                 comment_count: data.comment_count
             };
 
+
+            metaData.exportInitiated = false;
+            metaDate.exportLink = null;
+            
             const responseID =  await addSocialMediaArticle({
                 media : 'web',
                 data : metaData
             });
 
-            console.log('projectId', projectId);
             if(projectId){
                 queryUpdate(projectId, responseID);
             }
