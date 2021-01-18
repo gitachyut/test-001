@@ -82,7 +82,6 @@ module.exports = {
           existingSheet: existingSheet 
         };
        
-        console.log('exportLink', exportLink, reload)
         try {
             startDownload2( url, sheetName, sheetMeta, postID, postMedia, exportLink, reload )
                     .then(async ( data ) => {

@@ -23,7 +23,7 @@ module.exports = {
             let metaData =  reddit(data)
 
             metaData.exportInitiated = false;
-            metaDate.exportLink = null;
+            metaData.exportLink = null;
 
             const responseID =  await addSocialMediaArticle({
                 media : 'reddit',

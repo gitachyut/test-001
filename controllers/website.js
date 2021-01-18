@@ -51,8 +51,8 @@ module.exports = {
 
 
             metaData.exportInitiated = false;
-            metaDate.exportLink = null;
-            
+            metaData.exportLink = null;
+
             const responseID =  await addSocialMediaArticle({
                 media : 'web',
                 data : metaData
