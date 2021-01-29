@@ -12,6 +12,7 @@ const initiateCommentsDownloader = (url, media, type = null) => new Promise((res
             }
         };
     }else{
+        console.log('url', url);
         options = {
             url: `https://exportcomments.com/api/v2/export?url=${url}&replies=true&nested=true`,
             method: 'PUT',
