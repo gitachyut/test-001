@@ -19,7 +19,6 @@ module.exports = {
             const data = req.body;
             const projectId = data.projectId;
             const bussinessId = data.bussinessId;
-           
             const id = uuidv4();
             data.id = id;
             let metaData = youtube(data);
@@ -78,7 +77,7 @@ module.exports = {
             });
 
         }catch(error){
-		console.log(error);
+	    console.log(error);
             res.json({
                 done : false
             });

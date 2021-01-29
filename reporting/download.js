@@ -4,12 +4,16 @@ const { loadXLS, addNewSheet, loadXLSData, addNewSheet2 } = require('./addSheet'
 const { getRedditComments } = require('./reddit');
 const { hardwarezoneScraper } = require('./hardwarezone');
 const { updateExportLink } = require('../libs/elastic-functions');
+const {     
+  findCodeFromURL,
+  POSTID,
+  PROFILEID 
+} = require('../utils/getSearchParems');
 var path = require('path');
 const { 
   initiateCommentsDownloader, 
   checkStatus 
 } =  require("./export-comments");
-const { resolve } = require("path");
 const EXPORT_HOST = 'https://exportcomments.com/exports/';
 
 const fileDownloads = ( remoteFile ) => new Promise((resolve, reject) => {
@@ -74,8 +78,14 @@ const startDownload =  async (SML, SheetName, sheetMeta ) => new Promise( async 
       if(host === 'forums.hardwarezone.com.sg' || host === 'www.forums.hardwarezone.com.sg' )
           media = 'hardwarezone';
 
-      if(host === 'facebook.com' || host === 'www.facebook.com' || host === 'm.facebook.com')
-          media = 'facebook';
+      if(host === 'facebook.com' || host === 'www.facebook.com' || host === 'm.facebook.com'){
+        // https://www.facebook.com/permalink.php?story_fbid=110487666978284&id=100040511533479
+        media = 'facebook';
+        if( findCodeFromURL(SML, PROFILEID) && findCodeFromURL(SML, POSTID) ){
+          SML =  `https://www.facebook.com/${findCodeFromURL(SML, PROFILEID)}/posts/${findCodeFromURL(SML, POSTID)}`
+        }
+      }
+          
 
       if(host === 'instagram.com' || host === 'www.instagram.com' )
           media = 'instagram';  
@@ -91,6 +101,7 @@ const startDownload =  async (SML, SheetName, sheetMeta ) => new Promise( async 
 
         
       if(media === 'facebook' || media === 'instagram' || media === 'twitter' || media === 'youtube' ){
+        console.log('SML', SML);
           response = await initiateCommentsDownloader(SML, media);
           const exportLink = response.data.fileName;
           const id = response.data.id;
@@ -170,8 +181,13 @@ const startDownload2 =  async (SML, SheetName, sheetMeta, postID, postMedia, exp
     if(host === 'forums.hardwarezone.com.sg' || host === 'www.forums.hardwarezone.com.sg' )
         media = 'hardwarezone';
 
-    if(host === 'facebook.com' || host === 'www.facebook.com' || host === 'm.facebook.com')
-        media = 'facebook';
+    if(host === 'facebook.com' || host === 'www.facebook.com' || host === 'm.facebook.com'){
+      // https://www.facebook.com/permalink.php?story_fbid=110487666978284&id=100040511533479
+      media = 'facebook';
+      if( findCodeFromURL(SML, PROFILEID) && findCodeFromURL(SML, POSTID) ){
+        SML =  `https://www.facebook.com/${findCodeFromURL(SML, PROFILEID)}/posts/${findCodeFromURL(SML, POSTID)}`
+      }
+    }
 
     if(host === 'instagram.com' || host === 'www.instagram.com' )
         media = 'instagram';  
