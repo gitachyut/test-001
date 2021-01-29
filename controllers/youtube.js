@@ -19,10 +19,10 @@ module.exports = {
             const data = req.body;
             const projectId = data.projectId;
             const bussinessId = data.bussinessId;
-            console.log()
+           
             const id = uuidv4();
             data.id = id;
-            let metaDate = youtube(data);
+            let metaData = youtube(data);
 
             let exportLink = await initiateDownload(data.url)
             metaData.exportInitiated = true;
@@ -31,7 +31,7 @@ module.exports = {
 
             const responseID =  await addSocialMediaArticle({
                 media : 'youtube',
-                data : metaDate
+                data : metaData
             });
             
             if(projectId){
@@ -78,7 +78,7 @@ module.exports = {
             });
 
         }catch(error){
-
+		console.log(error);
             res.json({
                 done : false
             });
