@@ -67,7 +67,8 @@ const mergeData =  (auth, sheetName , values, spreadsheetId) => new Promise((res
         auth: auth,
         spreadsheetId: spreadsheetId,
         range: `${sheetName}!A:A`,
-        valueInputOption: 'RAW',
+        valueInputOption: 'USER_ENTERED',
+        insertDataOption: 'INSERT_ROWS',
         resource,
       }, (err, result) => {
         if (err) {
