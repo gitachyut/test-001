@@ -1,9 +1,8 @@
-const { addSocialMediaArticle } = require('../libs/data-engine')
+const { addSocialMediaArticle } = require('../libs/data-engine');
 const { initiateDownload } = require('../reporting/download'); 
-const { twitter } = require('../libs/dataset/twitter');
+const { tiktok } = require('../libs/dataset/tiktok');
 const { pushToElastic } = require('../libs/elastic-functions');
 const { queryUpdate } = require('../service/query');
-const { generateNumber } = require('../libs/helper');
 const { dataMapper } = require('../libs/data-maaper');
 const { v4: uuidv4 } = require('uuid');
 const authentication = require("../reporting/authentication");
@@ -20,9 +19,9 @@ module.exports = {
             const data = req.body;
             const projectId = data.projectId;
             const bussinessId = data.bussinessId;
-            const id = generateNumber(6);
+            const id = uuidv4();
             data.id = id;
-            let metaData =  twitter(data)
+            let metaData = tiktok(data);
 
             let exportLink = await initiateDownload(data.url)
             metaData.exportInitiated = true;
@@ -30,14 +29,15 @@ module.exports = {
 
 
             const responseID =  await addSocialMediaArticle({
-                media : 'twitter',
+                media : 'tiktok',
                 data : metaData
             });
-
+            
             if(projectId){
                 queryUpdate(projectId, responseID);
             }
 
+            
             if(data.spreadsheetId){
                 const auth = await authentication.authenticate();
                 const values = dataMapper(data);
@@ -77,9 +77,7 @@ module.exports = {
             });
 
         }catch(error){
-
-            console.log('error', error);
-
+            console.log(error)
             res.json({
                 done : false
             });

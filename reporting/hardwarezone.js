@@ -1,6 +1,6 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
-const { pushToElastic } = require('../libs/elastic-functions');
+const { pushToElastic, checkDoc, updateComments } = require('../libs/elastic-functions');
 const ES_COMMENTS_INDEX = 'comments';
 
 
@@ -9,7 +9,7 @@ const hzPaginationRemover = (url) => {
     return `${url[0]}.html`;
 }
 
-const hardwarezoneScraper = (url, existingSheet, postID, postMedia) => new Promise(async ( resolve, reject )=> {
+const hardwarezoneScraper = (url, existingSheet, postID, postMedia, projectId) => new Promise(async ( resolve, reject )=> {
     const original_url = hzPaginationRemover(url);
     let results, inc = 1;
     let esOutput = [];
@@ -73,13 +73,20 @@ const hardwarezoneScraper = (url, existingSheet, postID, postMedia) => new Promi
                     }, 1500);
     
                 }else{
-
-                    let postComment = {
-                        id: postID,
-                        media: postMedia,
-                        comments: esOutput
+                    let ifDocExist = await checkDoc(ES_COMMENTS_INDEX, postID);
+                    if(ifDocExist){
+                        let postComment = {
+                            [projectId]: esOutput
+                        }
+                        await updateComments(ES_COMMENTS_INDEX, postID, postComment);
+                    }else{
+                        let postComment = {
+                            id: postID,
+                            media: postMedia,
+                            [projectId]: esOutput
+                        }
+                        await pushToElastic(ES_COMMENTS_INDEX, postID, postComment);
                     }
-                    const output = await pushToElastic(ES_COMMENTS_INDEX, postID, postComment);
                     resolve(results);
                 }
             })
