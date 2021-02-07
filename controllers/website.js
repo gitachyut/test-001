@@ -66,7 +66,6 @@ module.exports = {
             if(data.spreadsheetId){
                 const auth = await authentication.authenticate();
                 const values = dataMapper(data);
-
                 if(data.customSheet){
                     if(data.newSheet){
                         const newSheet = await addSheet(auth, data.sheetName , data.spreadsheetId.value );
