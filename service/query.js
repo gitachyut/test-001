@@ -5,7 +5,7 @@ const queryUpdate = async (queryID, newsID) => {
         let query = await Query.findOne({ where: { id: queryID} });
         let selectedQuery = query.selectedQuery ? JSON.parse(query.selectedQuery) : [];
         selectedQuery.push({
-            match: { id : newsID }
+            match_phrase: { id : newsID }
         });
         selectedQuery = JSON.stringify(selectedQuery);
         await Query.update({  
@@ -26,7 +26,7 @@ const assignQueryUpdate = async (queryID, newsID) => {
         let query = await Query.findOne({ where: { id: queryID} });
         let selectedQuery = query.selectedQuery ? JSON.parse(query.selectedQuery) : [];
         selectedQuery.push({
-            match: { id : newsID }
+            match_phrase: { id : newsID }
         });
         selectedQuery = JSON.stringify(selectedQuery);
         await Query.update({  
