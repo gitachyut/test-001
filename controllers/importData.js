@@ -8,7 +8,8 @@ module.exports = {
             range,
             id: postId,
             sheetname,
-            media
+            media,
+            projectId
         } = req.body;
 
         if(spreadsheetId && range && postId ){
@@ -16,8 +17,7 @@ module.exports = {
                 sheetname = sheetname.trim();
                 range = range.trim();
                 const RANG = `${sheetname}!${range}`;
-                console.log(spreadsheetId, RANG, postId, media)
-                await importData(spreadsheetId, RANG, postId, media);
+                await importData(spreadsheetId, RANG, postId, media, projectId);
                 res.json({
                     done: true,
                     postId: postId

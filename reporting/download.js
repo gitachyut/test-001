@@ -31,9 +31,9 @@ const fileDownloads = ( remoteFile ) => new Promise((resolve, reject) => {
               tryCount++;
               if(tryCount > 15){
                 unlinkSync(fileName)
-                // return reject('No comment');
+                return reject('No comment');
                 // throw error
-                throw "No comment";
+                // throw "No comment";
                 // return resolve()
               }else{
                 setTimeout(()=>{
@@ -79,7 +79,6 @@ const startDownload =  async (SML, SheetName, sheetMeta ) => new Promise( async 
           media = 'hardwarezone';
 
       if(host === 'facebook.com' || host === 'www.facebook.com' || host === 'm.facebook.com'){
-        // https://www.facebook.com/permalink.php?story_fbid=110487666978284&id=100040511533479
         media = 'facebook';
         if( findCodeFromURL(SML, PROFILEID) && findCodeFromURL(SML, POSTID) ){
           SML =  `https://www.facebook.com/${findCodeFromURL(SML, PROFILEID)}/posts/${findCodeFromURL(SML, POSTID)}`
@@ -101,7 +100,6 @@ const startDownload =  async (SML, SheetName, sheetMeta ) => new Promise( async 
 
         
       if(media === 'facebook' || media === 'instagram' || media === 'twitter' || media === 'youtube' ){
-        console.log('SML', SML);
           response = await initiateCommentsDownloader(SML, media);
           const exportLink = response.data.fileName;
           const id = response.data.id;
@@ -109,7 +107,7 @@ const startDownload =  async (SML, SheetName, sheetMeta ) => new Promise( async 
               const file = await fileDownloads( exportLink );
               loadXLS(file, SheetName, sheetMeta, media)
                 .then( r => resolve(r))
-                .catch( e => console.log('001', e) || reject(e));
+                .catch( e => reject(e));
           }, 3000);
       }
       
@@ -170,7 +168,7 @@ const initiateDownload =  async ( SML ) => new Promise( async (resolve, reject) 
 
 
 
-const startDownload2 =  async (SML, SheetName, sheetMeta, postID, postMedia, exportedLink=false, reload=false ) => new Promise( async (resolve, reject) => {
+const startDownload2 =  async (SML, SheetName, sheetMeta, postID, postMedia, projectId,  exportedLink=false, reload=false ) => new Promise( async (resolve, reject) => {
 
   try {
     let url = new URL(SML);
@@ -211,7 +209,7 @@ const startDownload2 =  async (SML, SheetName, sheetMeta, postID, postMedia, exp
           await updateExportLink(postMedia, postID, exportLink);
           setTimeout(async () => {
               const file = await fileDownloads( exportLink );
-              loadXLSData(file, SheetName, sheetMeta, media, postID, postMedia)
+              loadXLSData(file, SheetName, sheetMeta, media, postID, postMedia, projectId)
                 .then( r => resolve(r))
                 .catch( e =>  reject(e));
           }, 3000);
@@ -219,7 +217,7 @@ const startDownload2 =  async (SML, SheetName, sheetMeta, postID, postMedia, exp
         }else{
           
           const file = await fileDownloads( exportedLink );
-          loadXLSData(file, SheetName, sheetMeta, media, postID, postMedia)
+          loadXLSData(file, SheetName, sheetMeta, media, postID, postMedia, projectId)
             .then( r => resolve(r))
             .catch( e => reject(e));
         }
@@ -227,14 +225,14 @@ const startDownload2 =  async (SML, SheetName, sheetMeta, postID, postMedia, exp
     }
     
     if(media === 'reddit'){
-        const values = await getRedditComments(SML, sheetMeta.existingSheet, postID, postMedia);
+        const values = await getRedditComments(SML, sheetMeta.existingSheet, postID, postMedia, projectId);
         addNewSheet2(values, SheetName, sheetMeta )
           .then(r => resolve(r))
           .catch(e => reject(e));
     }
 
     if(media === 'hardwarezone'){
-        const values = await hardwarezoneScraper(SML, sheetMeta.existingSheet, postID, postMedia);
+        const values = await hardwarezoneScraper(SML, sheetMeta.existingSheet, postID, postMedia, projectId);
             addNewSheet2(values, SheetName, sheetMeta )
               .then(r => resolve(r))
               .catch(e => reject(e));

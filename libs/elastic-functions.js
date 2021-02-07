@@ -120,6 +120,74 @@ module.exports = {
         });
     },
 
+    updateComments: async (index, id, data) => {
+      return new Promise( async (resolve, reject) => {
+        try {
+
+              var bodyDoc = {
+                  "doc": {
+                    ...data
+                  }
+              };
+
+              var type = "_update";
+              var results = await request({
+                  method: 'post',
+                  body: bodyDoc,
+                  json: true,
+                  url: `${config.credUrl}/${index}/${type}/${id}`,
+                  headers: {
+                      'Connection': 'keep-alive',
+                      'Content-Type': 'application/json'
+                  }
+              })
+              resolve(results);
+          } catch (error) {
+              console.log(error);
+              reject(error);
+          }
+      });
+    },
+
+    checkDoc: async (index, id) => {
+      return new Promise( async (resolve, reject) => {
+        try {
+              var type = "_doc";
+              var results = await request({
+                  method: 'get',
+                  json: true,
+                  url: `${config.credUrl}/${index}/${type}/${id}`,
+                  headers: {
+                      'Connection': 'keep-alive',
+                      'Content-Type': 'application/json'
+                  }
+              })
+
+              if(results.found){
+                resolve(true);
+              }else{
+                resolve(false);
+              }
+              
+          } catch (error) {
+              resolve(false);
+          }
+      });
+    },
+
+    insertComments: async (index, id, data) => {
+      try {
+        let doc = await checkDoc(index, id);
+        if(doc){
+          
+        }else{
+          pushToElastic(index, id, data)
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    },
+
     checkExist: async (index, id, data) =>{
       try {
         let results =  await ElasticClient.search({

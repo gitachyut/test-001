@@ -33,8 +33,6 @@ module.exports = {
           existingSheet: existingSheet 
         }
         
-
-        console.log('url', url);
         const id = uuidv4();
         let x = {
             id,
@@ -79,7 +77,7 @@ module.exports = {
         } = req.body;
 
         const sheetMeta = { 
-          spreadsheetId: spreadsheetId,
+          spreadsheetId: spreadsheetId.value,
           workSheetName:  workSheetName || null,
           existingSheet: existingSheet 
         };
@@ -96,11 +94,11 @@ module.exports = {
         };
 
         try {
-            startDownload2( url, sheetName, sheetMeta, postID, postMedia, exportLink, reload )
+            startDownload2( url, sheetName, sheetMeta, postID, postMedia, projectId, exportLink, reload )
                     .then(async ( data ) => {
                         pushToElastic(ES_GOOGLE_INDEX, id, x);
                         let docData = {
-                            worksheetId: spreadsheetId,
+                            worksheetId: spreadsheetId.value,
                             sheetName: sheetName
                         };
                         await updateDoc(postMedia, postID, docData);

@@ -10,6 +10,12 @@ module.exports = (app) => {
     //facebook
     app.post('/facebook/articles',  controller.facebook.addArticle)
 
+    //linkedin 
+    app.post('/linkedin/articles',  controller.linkedin.addArticle)
+
+    //tiktok
+    app.post('/tiktok/articles',  controller.tiktok.addArticle)
+
     //twitter
     app.post('/twitter/articles',  controller.twitter.addArticle)
 

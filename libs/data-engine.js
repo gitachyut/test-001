@@ -10,7 +10,9 @@ const
     INSTAGRAM_INDEX = "instagram",
     REDDIT_INDEX = "reddit",
     YOUTUBE_INDEX = "youtube",
-    TWITTER_INDEX = "twitter";
+    TWITTER_INDEX = "twitter",
+    TIKTOK_INDEX = "tiktok",
+    LINKEDIN_INDEX = "linkedin";
 
 
 const postValidate = (post) => {
@@ -145,9 +147,41 @@ function generateMetaSocialMedia(media, data) {
             view_count = data.view_count;
             break;
         }
+ 
+        case 'tiktok': {
+            post = data['description'];
+            title = data['title'];
+            id = data.postId;
+            index = TIKTOK_INDEX;
+            likes = data['likes'];
+            comment_count = data['comments'] || 0;
+            shares =  parseInt (data.shares) || 0 ;
+            author = data['author'];
+            post_date = moment(data['publishedAt']);
+            url = data['url'];
+            thumbnail = null;
+            view_count = data['viewcount'];
+            post_type = data.post_type;
+            break;
+        }
 
+        case 'linkedin': {
+            post = data['description'];
+            title = data['title'];
+            id = data.postId;
+            index = LINKEDIN_INDEX;
+            likes = data['likes'];
+            comment_count = data['comments'] || 0;
+            shares =  parseInt (data.shares) || 0 ;
+            author = data['author'];
+            post_date = moment(data['publishedAt']);
+            url = data['url'];
+            thumbnail = null;
+            view_count = data['viewcount'];
+            post_type = data.post_type;
+            break;
+        }
 
-                
         case 'youtube': {
             post = data['description'];
             title = data['title'];
@@ -163,6 +197,7 @@ function generateMetaSocialMedia(media, data) {
             post_type = 'video';
             break;
         }
+
 
         case 'reddit': {
             post = data['selftext'];

@@ -45,8 +45,11 @@ module.exports = {
                 author: host,
                 crawled: data.postDate,
                 updated: data.postDate,
-                like_count: data.likes,
-                comment_count: data.comment_count
+                like_count: parseInt(data.likes) || 0,
+                likes: parseInt(data.likes) || 0,
+                shares: parseInt(data.shares) || 0,
+                comments: parseInt( data.comments) || 0,
+                views: parseInt(data.views) || 0
             };
 
 
@@ -73,7 +76,7 @@ module.exports = {
                         newSheetData.push([
                             'Post Date', 
                             'View Comments', 
-                            'Language', 
+                            'Category', 
                             'Media', 
                             'Caption in Post', 
                             'Summary/Translation',

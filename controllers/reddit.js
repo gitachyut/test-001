@@ -45,7 +45,7 @@ module.exports = {
                         newSheetData.push([
                             'Post Date', 
                             'View Comments', 
-                            'Language', 
+                            'Category', 
                             'Media', 
                             'Caption in Post', 
                             'Summary/Translation',

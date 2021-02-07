@@ -1,6 +1,6 @@
 const { addSocialMediaArticle } = require('../libs/data-engine');
 const { initiateDownload } = require('../reporting/download'); 
-const { youtube } = require('../libs/dataset/youtube');
+const { tiktok } = require('../libs/dataset/tiktok');
 const { pushToElastic } = require('../libs/elastic-functions');
 const { queryUpdate } = require('../service/query');
 const { dataMapper } = require('../libs/data-maaper');
@@ -21,7 +21,7 @@ module.exports = {
             const bussinessId = data.bussinessId;
             const id = uuidv4();
             data.id = id;
-            let metaData = youtube(data);
+            let metaData = tiktok(data);
 
             let exportLink = await initiateDownload(data.url)
             metaData.exportInitiated = true;
@@ -29,7 +29,7 @@ module.exports = {
 
 
             const responseID =  await addSocialMediaArticle({
-                media : 'youtube',
+                media : 'tiktok',
                 data : metaData
             });
             

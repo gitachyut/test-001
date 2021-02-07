@@ -1,9 +1,9 @@
 const axios = require('axios');
 var moment = require("moment");
-const { pushToElastic } = require('../libs/elastic-functions');
+const { pushToElastic, checkDoc, updateComments } = require('../libs/elastic-functions');
 const ES_COMMENTS_INDEX = 'comments';
 
-const getRedditComments =  async (link, existingSheet, postID, postMedia) => new Promise(async (resolve, reject) => {
+const getRedditComments =  async (link, existingSheet, postID, postMedia, projectId) => new Promise(async (resolve, reject) => {
     let originalUrl = link;
     let results;
     let esOutput=[];
@@ -109,12 +109,20 @@ const getRedditComments =  async (link, existingSheet, postID, postMedia) => new
                 // none
             }else{
 
-                let postComment = {
-                    id: postID,
-                    media: postMedia,
-                    comments: esOutput
+                let ifDocExist = await checkDoc(ES_COMMENTS_INDEX, postID);
+                if(ifDocExist){
+                    let postComment = {
+                        [projectId]: esOutput
+                    }
+                    await updateComments(ES_COMMENTS_INDEX, postID, postComment);
+                }else{
+                    let postComment = {
+                        id: postID,
+                        media: postMedia,
+                        [projectId]: esOutput
+                    }
+                    await pushToElastic(ES_COMMENTS_INDEX, postID, postComment);
                 }
-                const output = await pushToElastic(ES_COMMENTS_INDEX, postID, postComment);
                 resolve(results);
             }
         });

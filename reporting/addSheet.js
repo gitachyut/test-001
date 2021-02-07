@@ -4,7 +4,7 @@ const fs = require('fs');
 let authentication = require("./authentication");
 const { resolve } = require('path');
 let sheets = google.sheets('v4');
-const { pushToElastic } = require('../libs/elastic-functions');
+const { pushToElastic, checkDoc, updateComments } = require('../libs/elastic-functions');
 const ES_COMMENTS_INDEX = 'comments';
 
 
@@ -312,7 +312,7 @@ const loadXLS  = async (commentSheetFileLoc, sheetName, sheetMeta, media) => new
 
 
    
-const loadXLSData = async (commentSheetFileLoc, sheetName, sheetMeta, media, postID, postMedia) => new Promise(async (resolve, reject) => {
+const loadXLSData = async (commentSheetFileLoc, sheetName, sheetMeta, media, postID, postMedia, projectId) => new Promise(async (resolve, reject) => {
 
     const wb = new ExcelJS.Workbook();
     const excelFile = await wb.xlsx.readFile(commentSheetFileLoc);
@@ -518,13 +518,21 @@ const loadXLSData = async (commentSheetFileLoc, sheetName, sheetMeta, media, pos
         }
     }
 
-    let postComment = {
-        id: postID,
-        media: postMedia,
-        comments: dataToPushToES
+    let ifDocExist = await checkDoc(ES_COMMENTS_INDEX, postID);
+    if(ifDocExist){
+        let postComment = {
+            [projectId]: dataToPushToES
+        }
+        await updateComments(ES_COMMENTS_INDEX, postID, postComment);
+    }else{
+        let postComment = {
+            id: postID,
+            media: postMedia,
+            [projectId]: dataToPushToES
+        }
+        await pushToElastic(ES_COMMENTS_INDEX, postID, postComment);
     }
-    const output = await pushToElastic(ES_COMMENTS_INDEX, postID, postComment);
-
+    
     addNewSheet2(
         data, 
         sheetName, 
