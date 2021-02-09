@@ -163,6 +163,8 @@ const addNewSheet2  = async (values, sheetName, { spreadsheetId, workSheetName, 
         reject(error);
     }
  }) 
+
+ 
 const loadXLS  = async (commentSheetFileLoc, sheetName, sheetMeta, media) => new Promise(async (resolve, reject) => {
 
     const wb = new ExcelJS.Workbook();
@@ -287,14 +289,14 @@ const loadXLS  = async (commentSheetFileLoc, sheetName, sheetMeta, media) => new
             data.splice(2, 0, ['Comment Summary', 'Comment Summary']);
             data.splice(5, 0, ['']);
             data.splice(6, 0, ['']);
-            data.splice(7, 0, ['Sequence', 'Date', 'Comment','Relevancy', 'Sentiment']);
+            data.splice(7, 0, ['Post ID','Sequence', 'Date', 'Comment','Relevancy', 'Sentiment']);
         }else{
             data.splice(0, 0, ['Item', 'Hot Link']);
             data.splice(1, 0, ['Post Summary', 'Post Summary']);
             data.splice(2, 0, ['Comment Summary', 'Comment Summary']);
             data.splice(4, 0, ['']);
             data.splice(5, 0, ['']);
-            data.splice(6, 0, ['Sequence', 'Date', 'Comment','Relevancy', 'Sentiment']);
+            data.splice(6, 0, ['Post ID', 'Sequence', 'Date', 'Comment','Relevancy', 'Sentiment']);
         }
     }
 
@@ -347,7 +349,7 @@ const loadXLSData = async (commentSheetFileLoc, sheetName, sheetMeta, media, pos
                     });
 
                     return [
-                        parseFloat(t), r[5], r[7]
+                        postID, parseFloat(t), r[5], r[7]
                     ]
                 }else{
                     if(r[1]){
@@ -358,7 +360,7 @@ const loadXLSData = async (commentSheetFileLoc, sheetName, sheetMeta, media, pos
                             sentiment: 'Neutral'
                         });
                         return [
-                            r[1], r[5], r[7]
+                            postID, r[1], r[5], r[7]
                         ]
                     }
                         
@@ -391,7 +393,7 @@ const loadXLSData = async (commentSheetFileLoc, sheetName, sheetMeta, media, pos
                     });
 
                     return [
-                        parseFloat(t), r[4], r[6]
+                        postID, parseFloat(t), r[4], r[6]
                     ]
                 }else{
                     if(r[1]){
@@ -404,7 +406,7 @@ const loadXLSData = async (commentSheetFileLoc, sheetName, sheetMeta, media, pos
                         });
 
                         return [
-                            r[1], r[4], r[6]
+                            postID, r[1], r[4], r[6]
                         ]
                     }
                 }  
@@ -434,7 +436,7 @@ const loadXLSData = async (commentSheetFileLoc, sheetName, sheetMeta, media, pos
                     });
 
                     return [
-                        parseFloat(t), r[4], r[8]
+                        postID, parseFloat(t), r[4], r[8]
                     ]
                 }else{
                     if(r[1]){
@@ -446,7 +448,7 @@ const loadXLSData = async (commentSheetFileLoc, sheetName, sheetMeta, media, pos
                             sentiment: 'Neutral'
                         });
                         return [
-                            r[1], r[4], r[8]
+                            postID, r[1], r[4], r[8]
                         ]
 
                     }
@@ -477,7 +479,7 @@ const loadXLSData = async (commentSheetFileLoc, sheetName, sheetMeta, media, pos
                     });
 
                     return [
-                        parseFloat(t), r[10], r[11]
+                        postID, parseFloat(t), r[10], r[11]
                     ]
                 }else{
                     if(r[1]){
@@ -490,7 +492,7 @@ const loadXLSData = async (commentSheetFileLoc, sheetName, sheetMeta, media, pos
                         });
 
                         return [
-                            r[1], r[10], r[11]
+                            postID, r[1], r[10], r[11]
                         ]
                     }
                 }  
@@ -507,14 +509,14 @@ const loadXLSData = async (commentSheetFileLoc, sheetName, sheetMeta, media, pos
             data.splice(2, 0, ['Comment Summary', 'Comment Summary']);
             data.splice(5, 0, ['']);
             data.splice(6, 0, ['']);
-            data.splice(7, 0, ['Sequence', 'Date', 'Comment','Relevancy', 'Sentiment']);
+            data.splice(7, 0, ['Post ID','Sequence', 'Date', 'Comment','Relevancy', 'Sentiment']);
         }else{
             data.splice(0, 0, ['Item', 'Hot Link']);
             data.splice(1, 0, ['Post Summary', 'Post Summary']);
             data.splice(2, 0, ['Comment Summary', 'Comment Summary']);
             data.splice(4, 0, ['']);
             data.splice(5, 0, ['']);
-            data.splice(6, 0, ['Sequence', 'Date', 'Comment','Relevancy', 'Sentiment']);
+            data.splice(6, 0, ['Post ID','Sequence', 'Date', 'Comment','Relevancy', 'Sentiment']);
         }
     }
 

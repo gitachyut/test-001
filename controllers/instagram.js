@@ -12,6 +12,7 @@ const {
 const { mergeData, appendData, addSheet } = require('../reporting/addSheet');
 const { v4: uuidv4 } = require('uuid');
 const ES_LINKLIST_INDEX = 'linklist';
+const { SHEETCOLUMN }  = require('../libs/helper/sheet-column');
 
 
 module.exports = {
@@ -46,21 +47,7 @@ module.exports = {
                     if(data.newSheet){
                         const newSheet = await addSheet(auth, data.sheetName , data.spreadsheetId.value );
                         let newSheetData = [];
-                        newSheetData.push([
-                            'Post Date', 
-                            'View Comments', 
-                            'Category', 
-                            'Media', 
-                            'Caption in Post', 
-                            'Summary/Translation',
-                            'Views',
-                            'Comments',
-                            'Likes',
-                            'Shares',
-                            'Author',
-                            'Post Type',
-                            'Link'
-                        ]);
+                        newSheetData.push(SHEETCOLUMN);
                         await appendData(auth, data.sheetName , newSheetData, data.spreadsheetId.value);
                         await mergeData(auth, data.sheetName, values, data.spreadsheetId.value);
                     }else{

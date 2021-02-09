@@ -23,7 +23,6 @@ module.exports = {
                     postId: postId
                 });
             } catch (error) {
-                console.log('error', error)
                 res.json({
                     done: false
                 });
