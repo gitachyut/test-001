@@ -2,6 +2,7 @@ var moment = require('moment-timezone');
 const dataMapper = ( data ) => {
     return [
         [
+            data.id,
             moment(data.postDate).format("DD/MM/YYYY"),
             data.author,
             "",

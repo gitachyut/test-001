@@ -25,10 +25,10 @@ const importData = (spreadsheetId, range, postID, media, projectId) => new Promi
                 }
                 postComment[projectId] = rows.map(row => {
                     return {
-                        sequence: row[0],
-                        date: row[1],
-                        comment: row[2] || '',
-                        sentiment: row[4] || 'Neutral'
+                        sequence: row[1],
+                        date: row[2],
+                        comment: row[3] || '',
+                        sentiment: row[5] || 'Neutral'
                     }
                 })
                 output = await updateComments(ES_COMMENTS_INDEX, postID, postComment);
@@ -40,10 +40,10 @@ const importData = (spreadsheetId, range, postID, media, projectId) => new Promi
                 }
                 postComment[projectId] = rows.map(row => {
                     return {
-                        sequence: row[0],
-                        date: row[1],
-                        comment: row[2] || '',
-                        sentiment: row[4] || 'Neutral'
+                        sequence: row[1],
+                        date: row[2],
+                        comment: row[3] || '',
+                        sentiment: row[5] || 'Neutral'
                     }
                 })
                 output = await pushToElastic(ES_COMMENTS_INDEX, postID, postComment);

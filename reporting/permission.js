@@ -5,7 +5,7 @@ const {
   ALL_LINKS_SHEET,
   COMMENT_SUMMARY_SHEET
 } = require('../config/config');
-
+const { SHEETCOLUMN }  = require('../libs/helper/sheet-column');
 const { createSheet, addSheet, appendData } = require('../reporting/addSheet');
 const createSheetNAssignUser = (sheetName, emailIds) => new Promise(async (resolve, reject)=> {
   try {
@@ -35,22 +35,7 @@ const createSheetNAssignUser = (sheetName, emailIds) => new Promise(async (resol
     //2nd Sheet
     const postSummarySheet = await addSheet(auth, POST_SUMMARY_SHEET, sheetId );
     let postSummarySheetDate = [];
-    postSummarySheetDate.push([
-        'Post Date', 
-        'View Comments', 
-        'Language', 
-        'Media', 
-        'Caption in Post', 
-        'Summary/Translation',
-        'Views',
-        'Comments',
-        'Likes',
-        'Shares',
-        'Author',
-        'Post Type',
-        'Link'
-
-    ]);
+    postSummarySheetDate.push(SHEETCOLUMN);
     await appendData(auth, POST_SUMMARY_SHEET, postSummarySheetDate, sheetId);
 
     //3rd Sheet
