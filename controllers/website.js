@@ -51,7 +51,8 @@ module.exports = {
                 likes: parseInt(data.likes) || 0,
                 shares: parseInt(data.shares) || 0,
                 comments: parseInt( data.comments) || 0,
-                views: parseInt(data.views) || 0
+                views: parseInt(data.views) || 0,
+                journalist: data.author.trim()
             };
 
 
