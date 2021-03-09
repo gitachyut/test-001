@@ -13,7 +13,7 @@ const hardwarezoneScraper = (url, existingSheet, postID, postMedia, projectId) =
     const original_url = hzPaginationRemover(url);
     let results, inc = 1;
     let esOutput = [];
-
+  let esOutput2 = [];
     if(existingSheet !== 'false' && existingSheet !== '' && existingSheet){
         results = [
             [ '' ],
@@ -27,7 +27,7 @@ const hardwarezoneScraper = (url, existingSheet, postID, postMedia, projectId) =
             [ 'Post Link', original_url , '' ],
             [ '' ],
             [ '' ],
-            ['Sequence', 'Date', 'Comment','Relevancy', 'Sentiment']
+            ['postID', 'Sequence', 'Date', 'Comment','Relevancy', 'Sentiment']
         ];
     }
 
@@ -48,7 +48,8 @@ const hardwarezoneScraper = (url, existingSheet, postID, postMedia, projectId) =
                         const comment = $(this).find('.post_message').text().trim()
 
                         results.push(
-                            [
+                            [  
+				postID,
                                 parseInt( sequence.split('#')[1] ),
                                 date,
                                 comment
@@ -62,6 +63,11 @@ const hardwarezoneScraper = (url, existingSheet, postID, postMedia, projectId) =
                             sentiment: 'Neutral'
                         })
 
+			esOutput2.push({
+                            sequence: parseInt( sequence.split('#')[1] ).toString(),
+                            comment: comment || '',
+                            sentiment: 'Neutral'
+			})
 
                     })
 
@@ -75,8 +81,9 @@ const hardwarezoneScraper = (url, existingSheet, postID, postMedia, projectId) =
                 }else{
                     let ifDocExist = await checkDoc(ES_COMMENTS_INDEX, postID);
                     if(ifDocExist){
+//			    console.log("exist");
                         let postComment = {
-                            [projectId]: esOutput
+                            [projectId]: esOutput2
                         }
                         await updateComments(ES_COMMENTS_INDEX, postID, postComment);
                     }else{
@@ -85,7 +92,14 @@ const hardwarezoneScraper = (url, existingSheet, postID, postMedia, projectId) =
                             media: postMedia,
                             [projectId]: esOutput
                         }
-                        await pushToElastic(ES_COMMENTS_INDEX, postID, postComment);
+
+			let postComment2 = {
+                            id: postID,
+                            media: postMedia,
+                            [projectId]: esOutput2
+                        }
+			
+                        await pushToElastic(ES_COMMENTS_INDEX, postID, postComment2);
                     }
                     resolve(results);
                 }

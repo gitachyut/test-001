@@ -17,6 +17,8 @@ module.exports = {
             index: index,
             type: '_doc',
             body: {
+	      from: 0,
+	      size: 100,
               query:{
                   bool:{
                       must:[
