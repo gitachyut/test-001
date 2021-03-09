@@ -1,5 +1,5 @@
 const { addSocialMediaArticle } = require('../libs/data-engine')
-const { initiateDownload } = require('../reporting/download'); 
+const { initiateDownload } = require('../reporting/download');
 const { facebook } = require('../libs/dataset/facebook');
 const { dataMapper } = require('../libs/data-maaper');
 const { pushToElastic } = require('../libs/elastic-functions');
@@ -12,7 +12,7 @@ const {
 const { mergeData, appendData, addSheet } = require('../reporting/addSheet');
 const { v4: uuidv4 } = require('uuid');
 const ES_LINKLIST_INDEX = 'linklist';
-const { SHEETCOLUMN }  = require('../libs/helper/sheet-column');
+const { SHEETCOLUMN } = require('../libs/helper/sheet-column');
 
 
 module.exports = {
@@ -27,55 +27,55 @@ module.exports = {
             data.id = id;
             let metaData = facebook(data)
 
-            if(parseInt( data.comments ) > 50){
+            if (parseInt(data.comments) > 20) {
                 let exportLink = await initiateDownload(data.url)
                 metaData.exportInitiated = true;
                 metaData.exportLink = exportLink;
-            }else{
+            } else {
                 metaData.exportInitiated = false;
             }
 
-            const responseID =  await addSocialMediaArticle({
-                media : 'facebook',
-                data : metaData
+            const responseID = await addSocialMediaArticle({
+                media: 'facebook',
+                data: metaData
             });
 
-            if(projectId){
+            if (projectId) {
                 queryUpdate(projectId, responseID);
             }
 
 
-            if(data.spreadsheetId){
+            if (data.spreadsheetId) {
                 const auth = await authentication.authenticate();
                 const values = dataMapper(data);
 
-                if(data.customSheet){
-                    if(data.newSheet){
-                        const newSheet = await addSheet(auth, data.sheetName , data.spreadsheetId.value );
+                if (data.customSheet) {
+                    if (data.newSheet) {
+                        const newSheet = await addSheet(auth, data.sheetName, data.spreadsheetId.value);
                         let newSheetData = [];
                         newSheetData.push(SHEETCOLUMN);
-                        await appendData(auth, data.sheetName , newSheetData, data.spreadsheetId.value);
+                        await appendData(auth, data.sheetName, newSheetData, data.spreadsheetId.value);
                         await mergeData(auth, data.sheetName, values, data.spreadsheetId.value);
-                    }else{
+                    } else {
                         await mergeData(auth, data.sheetName, values, data.spreadsheetId.value);
                     }
-                }else{
+                } else {
                     await mergeData(auth, POST_SUMMARY_SHEET, values, data.spreadsheetId.value);
                 }
             }
             res.json({
-                done : true,
+                done: true,
                 id: responseID
             });
 
-        }catch(error){
+        } catch (error) {
 
             console.log('error', error);
 
             res.json({
-                done : false
+                done: false
             });
 
-        } 
+        }
     }
 }

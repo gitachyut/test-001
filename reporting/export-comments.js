@@ -23,7 +23,8 @@ const initiateCommentsDownloader = (url, media, type = null) => new Promise((res
     }
     request(options, function(err, res, body) {
         if(err){
-            console.log(err);
+            console.log('hele',err);
+		console.log('dsdd', res);
             reject(err);
         }else{
             let json = JSON.parse(body);

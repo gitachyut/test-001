@@ -6,10 +6,13 @@ const ES_COMMENTS_INDEX = 'comments';
 const getRedditComments =  async (link, existingSheet, postID, postMedia, projectId) => new Promise(async (resolve, reject) => {
     let originalUrl = link;
     let results;
+    let xc = false;
     let esOutput=[];
+    let esOutput2 = [];
     link = link.substring(0, link.length - 1); 
     link = `${link}.json`;
     if(existingSheet !== 'false' && existingSheet !== '' && existingSheet){
+	xc = true;
         results = [
             [ '' ],
             [ 'Post Link', originalUrl, '' ]
@@ -75,9 +78,11 @@ const getRedditComments =  async (link, existingSheet, postID, postMedia, projec
                 } else {
                     comment.likes = -1;
                 }
-                
+
+                var incx = xc ? results.length - 1 : results.length - 6;
                 let final = [
-                    results.length + 1 ,  
+		    postID,
+                    incx,
                     comment.created_utc,
                     comment.body 
                 ];
@@ -86,6 +91,12 @@ const getRedditComments =  async (link, existingSheet, postID, postMedia, projec
                 esOutput.push({
                     sequence: (results.length + 1).toString(),
                     date: comment.created_utc,
+                    comment: comment.body || '',
+                    sentiment: 'Neutral'
+                })
+
+		 esOutput2.push({
+                    sequence: (results.length + 1).toString(),
                     comment: comment.body || '',
                     sentiment: 'Neutral'
                 })
@@ -112,16 +123,21 @@ const getRedditComments =  async (link, existingSheet, postID, postMedia, projec
                 let ifDocExist = await checkDoc(ES_COMMENTS_INDEX, postID);
                 if(ifDocExist){
                     let postComment = {
-                        [projectId]: esOutput
+                        [projectId]: esOutput2
                     }
-                    await updateComments(ES_COMMENTS_INDEX, postID, postComment);
+                   await updateComments(ES_COMMENTS_INDEX, postID, postComment);
                 }else{
                     let postComment = {
                         id: postID,
                         media: postMedia,
                         [projectId]: esOutput
                     }
-                    await pushToElastic(ES_COMMENTS_INDEX, postID, postComment);
+		    let postComment2 = {
+                        id: postID,
+                        media: postMedia,
+                        [projectId]: esOutput2
+                    }
+                  await pushToElastic(ES_COMMENTS_INDEX, postID, postComment2);
                 }
                 resolve(results);
             }

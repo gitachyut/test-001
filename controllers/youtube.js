@@ -24,10 +24,13 @@ module.exports = {
             data.id = id;
             let metaData = youtube(data);
 
-            let exportLink = await initiateDownload(data.url)
-            metaData.exportInitiated = true;
-            metaData.exportLink = exportLink;
-
+            if(parseInt( data.comments ) > 50){
+            	let exportLink = await initiateDownload(data.url)
+            	metaData.exportInitiated = true;
+            	metaData.exportLink = exportLink;
+	    }else{
+                metaData.exportInitiated = false;
+            }
 
             const responseID =  await addSocialMediaArticle({
                 media : 'youtube',
@@ -64,7 +67,7 @@ module.exports = {
             });
 
         }catch(error){
-            console.log(error)
+	    console.log(error);
             res.json({
                 done : false
             });

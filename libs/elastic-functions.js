@@ -17,6 +17,8 @@ module.exports = {
             index: index,
             type: '_doc',
             body: {
+	      from: 0,
+	      size: 100,
               query:{
                   bool:{
                       must:[
@@ -107,6 +109,7 @@ module.exports = {
     },
 
     pushToElastic: async (index, id, data) => {
+
         return new Promise((resolve, reject) => {
             ElasticClient.index({
                 index: index,
@@ -360,3 +363,4 @@ module.exports = {
     }
 
 }
+
