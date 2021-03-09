@@ -27,7 +27,7 @@ const hardwarezoneScraper = (url, existingSheet, postID, postMedia, projectId) =
             [ 'Post Link', original_url , '' ],
             [ '' ],
             [ '' ],
-            ['Sequence', 'Date', 'Comment','Relevancy', 'Sentiment']
+            [ 'Post ID', 'Sequence', 'Date', 'Comment','Relevancy', 'Sentiment' ]
         ];
     }
 
@@ -49,6 +49,7 @@ const hardwarezoneScraper = (url, existingSheet, postID, postMedia, projectId) =
 
                         results.push(
                             [
+                                postID,
                                 parseInt( sequence.split('#')[1] ),
                                 date,
                                 comment
@@ -85,6 +86,7 @@ const hardwarezoneScraper = (url, existingSheet, postID, postMedia, projectId) =
                             media: postMedia,
                             [projectId]: esOutput
                         }
+                        
                         await pushToElastic(ES_COMMENTS_INDEX, postID, postComment);
                     }
                     resolve(results);

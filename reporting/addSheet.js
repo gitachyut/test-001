@@ -164,7 +164,7 @@ const addNewSheet2  = async (values, sheetName, { spreadsheetId, workSheetName, 
     }
  }) 
 
- 
+
 const loadXLS  = async (commentSheetFileLoc, sheetName, sheetMeta, media) => new Promise(async (resolve, reject) => {
 
     const wb = new ExcelJS.Workbook();
@@ -190,12 +190,12 @@ const loadXLS  = async (commentSheetFileLoc, sheetName, sheetMeta, media) => new
                 if(r[2]){
                     let t = r[2].replace('-', '.')
                     return [
-                        parseFloat(t), r[5], r[7]
+                        '', parseFloat(t), r[5], r[7]
                     ]
                 }else{
                     if(r[1])
                         return [
-                            r[1], r[5], r[7]
+                            '', r[1], r[5], r[7]
                         ]
                 }  
             }
@@ -216,12 +216,12 @@ const loadXLS  = async (commentSheetFileLoc, sheetName, sheetMeta, media) => new
                 if(r[2]){
                     let t = r[2].replace('-', '.')
                     return [
-                        parseFloat(t), r[4], r[6]
+                        '', parseFloat(t), r[4], r[6]
                     ]
                 }else{
                     if(r[1])
                         return [
-                            r[1], r[4], r[6]
+                            '', r[1], r[4], r[6]
                         ]
                 }  
             }
@@ -242,12 +242,12 @@ const loadXLS  = async (commentSheetFileLoc, sheetName, sheetMeta, media) => new
                 if(r[2]){
                     let t = r[2].replace('-', '.')
                     return [
-                        parseFloat(t), r[4], r[8]
+                        '', parseFloat(t), r[4], r[8]
                     ]
                 }else{
                     if(r[1])
                         return [
-                            r[1], r[4], r[8]
+                            '', r[1], r[4], r[8]
                         ]
                 }  
             }
@@ -268,12 +268,12 @@ const loadXLS  = async (commentSheetFileLoc, sheetName, sheetMeta, media) => new
                 if(r[2]){
                     let t = r[2].replace('-', '.')
                     return [
-                        parseFloat(t), r[10], r[11]
+                        '', parseFloat(t), r[10], r[11]
                     ]
                 }else{
                     if(r[1])
                         return [
-                            r[1], r[10], r[11]
+                            '', r[1], r[10], r[11]
                         ]
                 }  
             }

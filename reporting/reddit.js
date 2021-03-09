@@ -22,7 +22,7 @@ const getRedditComments =  async (link, existingSheet, postID, postMedia, projec
             [ 'Post Link', originalUrl, '' ],
             [ '' ],
             [ '' ],
-            ['Sequence', 'Date', 'Comment','Relevancy', 'Sentiment']
+            ['postID','Sequence', 'Date', 'Comment','Relevancy', 'Sentiment']
         ];
     }
 
