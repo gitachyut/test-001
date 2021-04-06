@@ -5,8 +5,8 @@ const ES_COMMENTS_INDEX = 'comments';
 
 
 const hzPaginationRemover = (url) => {
-    url = url.split(/(-\b([1-9]|[1-9][0-9]||[1-9][0-9][0-9]|1000)\b\.\bhtml\b)/)[0].split('.html');
-    return `${url[0]}.html`;
+    url = url.split('/page-')[0];
+    return url.replace(/\/+$/, '');
 }
 
 const hardwarezoneScraper = (url, existingSheet, postID, postMedia, projectId) => new Promise(async (resolve, reject) => {
@@ -35,22 +35,24 @@ const hardwarezoneScraper = (url, existingSheet, postID, postMedia, projectId) =
         try {
             axios(url)
                 .then(async (response) => {
-                    if (!response.request._redirectable._redirectCount) {
+                    if ( response.request._redirectable._currentUrl.replace(/\/+$/, '') === url ) {
                         console.log('url', url);
                         const html = response.data;
                         const $ = cheerio.load(html);
-                        const statsTables = $('.post-wrapper');
+
+                        const statsTables = $('.message.message--post.js-post.js-inlineModContainer');
+                        
                         statsTables.each(function () {
-                            let sequenceWraper = $(this).find('.thead:last');
-                            let sequence = sequenceWraper.text().trim();
-                            let dateWraper = $(this).find('.thead:first');
+                            let sequenceWraper = $(this).find('.message-attribution-opposite.message-attribution-opposite--list');
+                            let sequence = sequenceWraper.find('li').text().trim().replace(/\s/g,'').split('#')[1];
+                            let dateWraper = $(this).find('time');
                             let date = dateWraper.text().trim();
-                            const comment = $(this).find('.post_message').text().trim()
+                            const comment = $(this).find('.bbWrapper').text().trim()
 
                             results.push(
                                 [
                                     postID,
-                                    parseInt(sequence.split('#')[1]),
+                                    parseInt(sequence),
                                     date,
                                     comment
                                 ]
@@ -72,8 +74,7 @@ const hardwarezoneScraper = (url, existingSheet, postID, postMedia, projectId) =
                         })
 
                         inc++;
-                        url = original_url.split('.html');
-                        url = url[0] + '-' + inc + '.html';
+                        url = url.split('/page-')[0] + '/page-' + inc;
                         setTimeout(function () {
                             runner(url);
                         }, 1500);
@@ -119,4 +120,4 @@ const hardwarezoneScraper = (url, existingSheet, postID, postMedia, projectId) =
 module.exports = {
     hardwarezoneScraper,
     hzPaginationRemover
-}
+};
