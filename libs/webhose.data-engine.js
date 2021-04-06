@@ -109,7 +109,7 @@ function generateMetaSocialMedia(media, data) {
         media_type = null,
 	    post_type = null;
 
-        
+    console.log('data.text', data.text );    
     switch (media) {
 
         case 'web': {

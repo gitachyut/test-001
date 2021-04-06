@@ -5,7 +5,7 @@ let dataset = (data) => ({
     "comments": data.comments ? parseInt(data.comments) : 0,
     "viewcount": data.views ? parseInt(data.views) : 0,
     "shares": data.shares ? parseInt(data.shares) : 0,
-    "description": data.post,
+    "description": `${data.post}`,
     "post_type": data.post_type.value,
     "postId": data.id,
     "url": data.url,

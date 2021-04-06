@@ -18,6 +18,7 @@ module.exports = {
     addArticle: async (req, res) => {
         try {
             const data = req.body;
+		console.log('req.body;', req.body);
             const projectId = data.projectId;
             const bussinessId = data.bussinessId;
             const id = uuidv4();

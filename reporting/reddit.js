@@ -87,6 +87,8 @@ const getRedditComments = async (link, existingSheet, postID, postMedia, project
                     comment.created_utc,
                     comment.body
                 ];
+           
+		console.log('final', final);
 
                 results.push(final)
                 esOutput.push({
@@ -119,7 +121,28 @@ const getRedditComments = async (link, existingSheet, postID, postMedia, project
 
             if (i + 1 == json[1].data.children.length) {
                 // none
-            } else {
+		 let ifDocExist = await checkDoc(ES_COMMENTS_INDEX, postID);
+                if(ifDocExist){
+                    let postComment = {
+                        [projectId]: esOutput2
+                    }
+                   await updateComments(ES_COMMENTS_INDEX, postID, postComment);
+                }else{
+                    let postComment = {
+                        id: postID,
+                        media: postMedia,
+                        [projectId]: esOutput
+                    }
+                    let postComment2 = {
+                        id: postID,
+                        media: postMedia,
+                        [projectId]: esOutput2
+                    }
+                  await pushToElastic(ES_COMMENTS_INDEX, postID, postComment2);
+                }
+                resolve(results);
+
+            }else{
 
                 let ifDocExist = await checkDoc(ES_COMMENTS_INDEX, postID);
                 if (ifDocExist) {
