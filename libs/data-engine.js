@@ -61,7 +61,7 @@ const engine = async (event) => {
         data.hashtags = hashtags;
         data.createdAt = moment().format("YYYY-MM-DDTHH:mm:ss.SSSZZ");
         data = { ...data, ...rest  };
-
+	console.log('data main => >>>>>>', data );
         try {
             let esResponse = await pushToElastic(index, id, data);
         } catch (error) {

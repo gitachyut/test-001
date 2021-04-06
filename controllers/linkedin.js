@@ -28,6 +28,7 @@ module.exports = {
             metaData.exportInitiated = true;
             metaData.exportLink = exportLink;
 
+	    console.log('data =>>>>>', JSON.stringify( data ) );
 
             const responseID =  await addSocialMediaArticle({
                 media : 'linkedin',

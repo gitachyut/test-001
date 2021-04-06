@@ -109,7 +109,7 @@ module.exports = {
     },
 
     pushToElastic: async (index, id, data) => {
-
+	console.log(JSON.stringify('tre=>>>>>>>>',data))
         return new Promise((resolve, reject) => {
             ElasticClient.index({
                 index: index,

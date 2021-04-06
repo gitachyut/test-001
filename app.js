@@ -20,6 +20,6 @@ app.all('/*', function(req, res, next) {
 
 
 // Handle defined routes
-require('./routes')(app)
+require('./routes')(app, '/comment-scraper');
 
 module.exports = app;

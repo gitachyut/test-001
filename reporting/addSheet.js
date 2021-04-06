@@ -189,14 +189,28 @@ const loadXLS  = async (commentSheetFileLoc, sheetName, sheetMeta, media) => new
             if( i > 1){
                 if(r[2]){
                     let t = r[2].replace('-', '.')
-                    return [
-                        parseFloat(t), r[5], r[7]
-                    ]
+		    if(r[9]){
+                    	return [
+                        	parseFloat(t), r[5], r[8]
+                   	 ]
+	            }else{
+			   return [
+                                parseFloat(t), r[5], r[7]
+                         ]
+		    }
                 }else{
-                    if(r[1])
-                        return [
-                            r[1], r[5], r[7]
-                        ]
+                    if(r[1]){
+			if(r[9]){
+                          return [
+                                parseFloat(t), r[5], r[8]
+                         ]
+                    	}else{
+                           return [
+                                parseFloat(t), r[5], r[7]
+                         ]
+                    	}
+		    }
+                      
                 }  
             }
         })
@@ -339,29 +353,61 @@ const loadXLSData = async (commentSheetFileLoc, sheetName, sheetMeta, media, pos
             }
             if( i > 1){
                 if(r[2]){
-                    let t = r[2].replace('-', '.')
+		   if(r[9]){
 
-                    dataToPushToES.push({
+			let t = r[2].replace('-', '.')
+
+                    	dataToPushToES.push({
+                        sequence: parseFloat(t).toString(),
+                        date: r[5],
+                        comment: r[8] || '',
+                        sentiment: 'Neutral'
+                   	});
+
+                    	return [
+                        	postID, parseFloat(t), r[5], r[8]
+                    	]
+                    }else{
+			      let t = r[2].replace('-', '.')
+
+                        dataToPushToES.push({
                         sequence: parseFloat(t).toString(),
                         date: r[5],
                         comment: r[7] || '',
                         sentiment: 'Neutral'
-                    });
+                        });
 
-                    return [
-                        postID, parseFloat(t), r[5], r[7]
-                    ]
+                        return [
+                                postID, parseFloat(t), r[5], r[7]
+                        ]
+                    }
+                   
                 }else{
                     if(r[1]){
-                        dataToPushToES.push({
-                            sequence: r[1].toString(),
-                            date: r[5],
-                            comment: r[7] || '',
-                            sentiment: 'Neutral'
-                        });
-                        return [
-                            postID, r[1], r[5], r[7]
-                        ]
+
+			if(r[9]){
+				dataToPushToES.push({
+                            	  sequence: r[1].toString(),
+                           	  date: r[5],
+                            	  comment: r[8] || '',
+                            	  sentiment: 'Neutral'
+                        	});
+                       	 	return [
+                           		 postID, r[1], r[5], r[8]
+                        	]
+			}else{
+				dataToPushToES.push({
+                                  sequence: r[1].toString(),
+                                  date: r[5],
+                                  comment: r[7] || '',
+                                  sentiment: 'Neutral'
+                                });
+                                return [
+                                         postID, r[1], r[5], r[7]
+                                ]
+
+			}
+                       
                     }
                         
                 }  

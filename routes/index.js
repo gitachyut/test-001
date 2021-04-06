@@ -1,57 +1,58 @@
 const controller = require('../controllers');
-module.exports = (app) => {
+module.exports = (app, versioning_url) => {
     //website
-    app.post('/website/articles',  controller.website.addArticle)
+    app.post(versioning_url + '/website/articles',  controller.website.addArticle)
     
     //Business 
-    app.get('/clients',  controller.client.list)
-    app.get('/query/:businessId', controller.client.listProjects)
+    app.get(versioning_url + '/clients',  controller.client.list)
+
+    app.get(versioning_url + '/query/:businessId', controller.client.listProjects)
     
     //facebook
-    app.post('/facebook/articles',  controller.facebook.addArticle)
+    app.post(versioning_url + '/facebook/articles',  controller.facebook.addArticle)
 
     //linkedin 
-    app.post('/linkedin/articles',  controller.linkedin.addArticle)
+    app.post(versioning_url + '/linkedin/articles',  controller.linkedin.addArticle)
 
     //tiktok
-    app.post('/tiktok/articles',  controller.tiktok.addArticle)
+    app.post(versioning_url + '/tiktok/articles',  controller.tiktok.addArticle)
 
     //twitter
-    app.post('/twitter/articles',  controller.twitter.addArticle)
+    app.post(versioning_url + '/twitter/articles',  controller.twitter.addArticle)
 
     //instagram
-    app.post('/instagram/articles',  controller.instagram.addArticle)
+    app.post(versioning_url + '/instagram/articles',  controller.instagram.addArticle)
 
     //youtube
-    app.post('/youtube/articles',  controller.youtube.addArticle)
+    app.post(versioning_url + '/youtube/articles',  controller.youtube.addArticle)
 
     //reddit
-    app.post('/reddit/articles',  controller.reddit.addArticle)
+    app.post(versioning_url + '/reddit/articles',  controller.reddit.addArticle)
 
     //Export Comments
-    app.post('/export/comments', controller.commentsExports.exports)
+    app.post(versioning_url + '/export/comments', controller.commentsExports.exports)
 
-    app.post('/export/comments/link', controller.commentsExports.exportsAndLink)
+    app.post(versioning_url + '/export/comments/link', controller.commentsExports.exportsAndLink)
 
     // createSheet
-    app.post('/create/new-sheet', controller.commentsExports.createSheet)
+    app.post(versioning_url + '/create/new-sheet', controller.commentsExports.createSheet)
 
     //GetSheets
-    app.post('/get/:project/sheets', controller.commentsExports.getSheet)
+    app.post(versioning_url + '/get/:project/sheets', controller.commentsExports.getSheet)
 
     //GetSheets Business
-    app.post('/get/:bussinessId/sheetsForBusiness', controller.commentsExports.getSheetbyBusiness)
+    app.post(versioning_url + '/get/:bussinessId/sheetsForBusiness', controller.commentsExports.getSheetbyBusiness)
 
     //GetNews
-    app.post('/get/news', controller.commentsExports.getAllNews)
+    app.post(versioning_url + '/get/news', controller.commentsExports.getAllNews)
 
     //News
-    app.post('/news-remove/:id', controller.news.delete)
+    app.post(versioning_url + '/news-remove/:id', controller.news.delete)
 
     //unique url
-    app.post('/check/unique/url', controller.commentsExports.findUniqueUrl)
+    app.post(versioning_url + '/check/unique/url', controller.commentsExports.findUniqueUrl)
 
     //pull pullComments
-    app.post('/pull/comments', controller.importData.pullComments);
+    app.post(versioning_url + '/pull/comments', controller.importData.pullComments);
     
 };
