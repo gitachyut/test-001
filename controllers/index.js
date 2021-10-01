@@ -6,6 +6,7 @@ const youtube = require('./youtube');
 const facebook = require('./facebook');
 const linkedin = require('./linkedin');
 const tiktok = require('./tiktok');
+const links = require('./links');
 const client = require('./client');
 const news = require('./news');
 const importData = require('./importData');
@@ -22,5 +23,6 @@ module.exports = {
     news,
     importData,
     linkedin,
-    tiktok
+    tiktok,
+    links
 };

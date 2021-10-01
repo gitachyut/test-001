@@ -10,6 +10,7 @@ module.exports = (app, versioning_url) => {
     
     //facebook
     app.post(versioning_url + '/facebook/articles',  controller.facebook.addArticle)
+    app.post(versioning_url + '/facebook/bulk-upload', controller.facebook.bulkFacebook)
 
     //linkedin 
     app.post(versioning_url + '/linkedin/articles',  controller.linkedin.addArticle)
@@ -54,5 +55,12 @@ module.exports = (app, versioning_url) => {
 
     //pull pullComments
     app.post(versioning_url + '/pull/comments', controller.importData.pullComments);
-    
+
+    //pull links
+    app.get(versioning_url + '/links', controller.links.list);
+
+    //create links
+    app.post(versioning_url + '/links', controller.links.create);
+
+
 };
