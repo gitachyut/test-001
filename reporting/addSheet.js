@@ -571,14 +571,14 @@ const loadXLSData = async (commentSheetFileLoc, sheetName, sheetMeta, media, pos
         let postComment = {
             [projectId]: dataToPushToES
         }
-        await updateComments(ES_COMMENTS_INDEX, postID, postComment);
+//        await updateComments(ES_COMMENTS_INDEX, postID, postComment);
     }else{
         let postComment = {
             id: postID,
             media: postMedia,
             [projectId]: dataToPushToES
         }
-        await pushToElastic(ES_COMMENTS_INDEX, postID, postComment);
+  //      await pushToElastic(ES_COMMENTS_INDEX, postID, postComment);
     }
     
     addNewSheet2(

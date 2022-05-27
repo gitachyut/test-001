@@ -126,7 +126,7 @@ const getRedditComments = async (link, existingSheet, postID, postMedia, project
                     let postComment = {
                         [projectId]: esOutput2
                     }
-                   await updateComments(ES_COMMENTS_INDEX, postID, postComment);
+      //             await updateComments(ES_COMMENTS_INDEX, postID, postComment);
                 }else{
                     let postComment = {
                         id: postID,
@@ -138,7 +138,7 @@ const getRedditComments = async (link, existingSheet, postID, postMedia, project
                         media: postMedia,
                         [projectId]: esOutput2
                     }
-                  await pushToElastic(ES_COMMENTS_INDEX, postID, postComment2);
+//                  await pushToElastic(ES_COMMENTS_INDEX, postID, postComment2);
                 }
                 resolve(results);
 
@@ -149,7 +149,7 @@ const getRedditComments = async (link, existingSheet, postID, postMedia, project
                     let postComment = {
                         [projectId]: esOutput2
                     }
-                    await updateComments(ES_COMMENTS_INDEX, postID, postComment);
+  //                  await updateComments(ES_COMMENTS_INDEX, postID, postComment);
                 } else {
                     let postComment = {
                         id: postID,
@@ -161,7 +161,7 @@ const getRedditComments = async (link, existingSheet, postID, postMedia, project
                         media: postMedia,
                         [projectId]: esOutput2
                     }
-                    await pushToElastic(ES_COMMENTS_INDEX, postID, postComment2);
+    //                await pushToElastic(ES_COMMENTS_INDEX, postID, postComment2);
                 }
                 resolve(results);
             }

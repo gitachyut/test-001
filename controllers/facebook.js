@@ -24,7 +24,7 @@ module.exports = {
       data.id = id;
       let metaData = facebook(data);
 
-      if (parseInt(data.comments) > 20) {
+      if (parseInt(data.comments) > 200000000000) {
         let exportLink = await initiateDownload(data.url);
         metaData.exportInitiated = true;
         metaData.exportLink = exportLink;

@@ -26,7 +26,7 @@ module.exports = {
             let metaData =  twitter(data)
 
 
-            if(parseInt( data.comments ) > 50){
+            if(parseInt( data.comments ) > 5000000000000000){
             	let exportLink = await initiateDownload(data.url)
             	metaData.exportInitiated = true;
            	 metaData.exportLink = exportLink;

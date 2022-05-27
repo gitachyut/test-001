@@ -86,7 +86,7 @@ const hardwarezoneScraper = (url, existingSheet, postID, postMedia, projectId) =
                             let postComment = {
                                 [projectId]: esOutput2
                             }
-                            await updateComments(ES_COMMENTS_INDEX, postID, postComment);
+//                            await updateComments(ES_COMMENTS_INDEX, postID, postComment);
                         } else {
                             let postComment = {
                                 id: postID,
@@ -100,7 +100,7 @@ const hardwarezoneScraper = (url, existingSheet, postID, postMedia, projectId) =
                                 [projectId]: esOutput2
                             }
 
-                            await pushToElastic(ES_COMMENTS_INDEX, postID, postComment2);
+//                            await pushToElastic(ES_COMMENTS_INDEX, postID, postComment2);
                         }
                         resolve(results);
                     }

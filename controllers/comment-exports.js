@@ -17,6 +17,7 @@ const ES_LINKLIST_INDEX = 'linklist';
 
 module.exports = {
     exports: async (req, res) => {
+	    console.log('hellllllllllllllllllllllllllllllllllllll');
         const {
             url,
             sheetName,
@@ -46,7 +47,7 @@ module.exports = {
         try {
             startDownload( url, sheetName, sheetMeta )
                     .then(async ( data ) => {
-                        pushToElastic(ES_GOOGLE_INDEX, id, x);
+  //                      pushToElastic(ES_GOOGLE_INDEX, id, x);
                         res.json({
                             done: true
                         }); 
@@ -96,7 +97,7 @@ module.exports = {
         try {
             startDownload2( url, sheetName, sheetMeta, postID, postMedia, projectId, exportLink, reload )
                     .then(async ( data ) => {
-                        pushToElastic(ES_GOOGLE_INDEX, id, x);
+//                        pushToElastic(ES_GOOGLE_INDEX, id, x);
                         let docData = {
                             worksheetId: spreadsheetId.value,
                             sheetName: sheetName

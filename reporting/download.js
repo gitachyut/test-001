@@ -206,7 +206,7 @@ const startDownload2 =  async (SML, SheetName, sheetMeta, postID, postMedia, pro
           
           response = await initiateCommentsDownloader(SML, media);
           const exportLink = response.data.fileName;
-          await updateExportLink(postMedia, postID, exportLink);
+    //      await updateExportLink(postMedia, postID, exportLink);
           setTimeout(async () => {
               const file = await fileDownloads( exportLink );
               loadXLSData(file, SheetName, sheetMeta, media, postID, postMedia, projectId)

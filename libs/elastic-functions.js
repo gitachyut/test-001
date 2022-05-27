@@ -184,7 +184,7 @@ module.exports = {
         if(doc){
           
         }else{
-          pushToElastic(index, id, data)
+//          pushToElastic(index, id, data)
         }
       } catch (error) {
         console.error(error);
