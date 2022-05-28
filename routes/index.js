@@ -62,5 +62,15 @@ module.exports = (app, versioning_url) => {
     //create links
     app.post(versioning_url + '/links', controller.links.create);
 
+    //create businesses
+    app.post(versioning_url + '/business', controller.business.create);
 
+    //get businesses
+    app.get(versioning_url + '/business', controller.business.list);
+
+    //create users
+    app.post(versioning_url + '/users', controller.user.create);
+
+    //get users
+    app.get(versioning_url + '/users', controller.user.list);
 };

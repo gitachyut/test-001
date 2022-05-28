@@ -40,6 +40,13 @@ module.exports = (sequelize, DataTypes) => {
     );
 
     Business.associate = function (models) {
+
+        Business.hasMany(models.SocialMediaConfig, {
+            foreignKey: 'business_id',
+        })
+        Business.hasMany(models.TreditionalMediaTracker, {
+            foreignKey: 'businessId',
+        })
         Business.hasMany(models.Query, {
             foreignKey: 'businessId',
         })

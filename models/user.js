@@ -25,7 +25,10 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.STRING,
                 allowNull: true
             },
-
+            role_id: {
+                type: DataTypes.INTEGER,
+                allowNull: true
+            },
             meta: {
                 type: DataTypes.TEXT,
                 allowNull: true
@@ -62,16 +65,17 @@ module.exports = (sequelize, DataTypes) => {
 
     User.associate = function (models) {
 
-        User.belongsToMany(models.Business,
+        User.hasMany(models.TreditionalMediaTracker, {
+            foreignKey: 'user_id',
+        })
+        User.hasMany(models.Job, {
+            foreignKey: 'userId',
+        })
+        User.belongsTo(models.Role,
             {
-                as: 'businesses',
-                through: {
-                    model: models.Business_User
-                },
-                foreignKey: 'user_id',
-                otherKey: 'business_id'
+                as: 'role',
+                foreignKey: 'role_id',
             });
-
     };
 
     return User;

@@ -11,6 +11,8 @@ const client = require('./client');
 const news = require('./news');
 const importData = require('./importData');
 const commentsExports = require('./comment-exports');
+const business = require('./business');
+const user = require('./user');
 module.exports = {
     website,
     reddit,
@@ -24,5 +26,7 @@ module.exports = {
     importData,
     linkedin,
     tiktok,
-    links
+    links,
+    business,
+    user
 };
